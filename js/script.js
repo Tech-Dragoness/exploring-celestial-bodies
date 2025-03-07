@@ -637,7 +637,7 @@ function calendarView() {
     // Example of how to load the important dates from Excel
     async function loadImportantDates() {
         try {
-            const response = await fetch("../Database.xlsx");  // Use the correct path to the file
+            const response = await fetch("Database.xlsx");  // Use the correct path to the file
             const data = await response.arrayBuffer();
             const workbook = XLSX.read(new Uint8Array(data), { type: "array" });
             const sheetName = workbook.SheetNames[1];  // Assuming the important dates are in Sheet2
@@ -1243,7 +1243,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function loadExcelFile() {
         try {
             if (!cachedRows) { // If not already loaded
-                const response = await fetch("../Database.xlsx"); // Replace with correct path
+                const response = await fetch("Database.xlsx"); // Replace with correct path
                 const data = await response.arrayBuffer();
                 const workbook = XLSX.read(new Uint8Array(data), { type: "array" });
                 const sheetName = workbook.SheetNames[0]; // First sheet
@@ -1374,7 +1374,7 @@ let cachedCredentials = null;
 async function loadCredentialsFromExcel() {
     try {
         if (!cachedCredentials) { // Load if not already cached
-            const response = await fetch("../Database.xlsx"); // Replace with correct path
+            const response = await fetch("Database.xlsx"); // Replace with correct path
             const data = await response.arrayBuffer();
             const workbook = XLSX.read(new Uint8Array(data), { type: "array" });
             const sheetName = workbook.SheetNames[2]; // Third sheet (0-indexed)
