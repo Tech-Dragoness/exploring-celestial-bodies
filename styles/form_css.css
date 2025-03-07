@@ -1,0 +1,371 @@
+/* Positioning the popup container */
+#popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5); /* Dimmed background */
+    display: flex; /* Use flexbox */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    z-index: 1000; /* Above all other elements */
+    display: none; /* Hidden by default */
+}
+
+#open-popup, #logout-popup {
+    width: 100px;
+    text-align: center; /* Center align the icon and text */
+    display: inline-block; /* Keep the icon and text together */
+    padding: 0px 0px;
+    background-color: transparent; /* Button background color */
+    border: none; /* Remove default button border */
+    cursor: pointer; /* Pointer cursor on hover */
+    position: fixed; /* Position fixed to the screen */
+    top: 15px; /* Distance from the top */
+    right: 0px; /* Distance from the right */
+    z-index: 999; /* Above all other elements */
+    transition: background-color 0.3s, transform 0.2s; /* Add hover effects */
+  }
+  
+  #open-popup:hover, #logout-popup:hover {
+    cursor: pointer;
+    transform: scale(1.1); /* Slight enlargement */
+  }
+  
+  #open-popup:active, #logout-popup:active {
+    transform: scale(0.95); /* Slightly smaller on click */
+  }
+  
+  #logout-popup {
+    display: none; /* Initially hidden */
+  }  
+
+/* Popup content styling */
+.popup-content {
+    position: relative; /* Needed for positioning the close button */
+    background: transparent;
+    padding: 20px;
+    border-radius: 10px;
+    width: 500px; /* Adjust size as needed */
+    height: 500px;
+    text-align: center;
+}
+
+.icon {
+    font-size: 35px; /* Size of the icon */
+    color: white; /* Icon color */
+    padding-left: 10px;
+    margin-right: 8px; /* Space between icon and text */
+	font-weight: bold; /* Text styling */
+	margin-top: 5px;
+}
+
+#login-button p,#logout-button p {
+    margin-top: 0px; /* Space between the icon and the text */
+    font-size: 15px; /* Size of the text */
+    color: white; /* Text color */
+    font-weight: bold;
+    margin-left: -5px;
+}
+
+@media (max-width:768px) {
+    .icon {
+        font-size: 18px;
+    }
+    #login-button p {
+        font-size: 12px;
+    }
+}
+
+#open-popup:hover .icon,#logout-popup:hover .icon {
+	color: blueviolet;
+}
+
+#open-popup:hover #login-button p,#logout-popup:hover #logout-button p {
+	color: blueviolet;
+}
+
+
+/* Close button styling */
+/* Close button default position */
+#close-popup {
+    position: absolute;
+    top: 10px; /* Default spacing from the top */
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: top 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+/* When the recovery form is active, move the close button up */
+.recovery-active #close-popup {
+    top: 40px; /* Move the button up */
+}
+
+.registration-active #close-popup {
+    top: 10px; /* Move the button up */
+    right: -20px; /* Move the button up */
+}
+
+/* Add hover and active states for the close button */
+#close-popup:hover {
+    background: #d32f2f; /* Red on hover */
+    transform: scale(1.1); /* Slight enlargement */
+}
+
+#close-popup:active {
+    transform: scale(0.9); /* Shrinks on click */
+}
+
+/* Login form */
+.login-form h2 {
+    font-size: 28px;
+    margin-bottom: 50px;
+    color: #333; /* Dark text color */
+}
+
+.login-form input {
+    width: 90%;
+    padding: 10px 15px;
+    margin-top: 30px;
+    border: 1px solid #414141;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.login-form input:focus {
+    border-color: #778DA9; /* Yellow border on focus */
+    outline: none; /* Remove default outline */
+}
+
+.error { 
+    color: red; 
+    font-size: 0.9em; 
+    margin-top: 5px;
+}
+
+.login-form button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background: #1B263B; /* Grey background */
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 120px;
+}
+.login-form button[type="submit"]:hover {
+    background: #778DA9; /* Yellow on hover */
+    color: #000000;
+}
+
+/* Sign up link */
+.login-form a {
+    display: block;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.login-form a:hover {
+    text-decoration: underline;
+}
+
+/* recovery form */
+
+.recovery-form h2 {
+    font-size: 28px;
+    margin-bottom: 30px;
+    color: #333; /* Dark text color */
+}
+
+.registration-form h2 {
+    font-size: 26px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding: 0px 20px !important;
+    color: #333; /* Dark text color */
+}
+
+.registration-form {
+    margin-bottom: 0px;
+    margin-top: 0px;
+    padding: 5px 30px !important;
+}
+
+.recovery-form input {
+    width: 90%;
+    padding: 10px 15px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    border: 1px solid #414141;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #0c0c0c;
+}
+
+.registration-form input {
+    width: 90%;
+    padding: 10px 15px;
+    margin-top: 20px;
+    border: 1px solid #414141;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #0c0c0c;
+}
+.registration-form #dob {
+    width: 65%;
+    padding: 10px 15px;
+    margin-top: 0px;
+    border: 1px solid #414141;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #0c0c0c;
+}
+
+.registration-form #doblabel {
+    color: #6d6c6c ;
+    font-family: system-ui, sans-serif !important;
+    font-size: 15px;
+}
+
+.recovery-form input:focus, .registration-form input:focus {
+    border-color: #778DA9; /* Yellow border on focus */
+    outline: none; /* Remove default outline */
+}
+
+.recovery-form button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background: #1B263B; /* Grey background */
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 90px;
+}
+
+.recovery-form #verify-otp {
+    width: 100%;
+    padding: 10px;
+    background: #1B263B; /* Grey background */
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    margin-bottom: -100px;
+}
+
+.recovery-form #verify-otp:hover {
+    background: #778DA9; /* Yellow on hover */
+    color: #000000;
+}
+
+.recovery-form:has(#verify-otp:not([hidden])) button[type="submit"] {
+    margin-top: 30px; /* Adjusted margin */
+}
+
+.registration-form button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background: #1B263B; /* Grey background */
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 30px;
+}
+
+.recovery-form button[type="submit"]:hover, .registration-form button[type="submit"]:hover {
+    background: #778DA9; /* Yellow on hover */
+    color: #000000;
+}
+
+/* Sign up link */
+.recovery-form a, .registration-form a {
+    display: block;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.recovery-form a:hover, .registration-form a:hover {
+    text-decoration: underline;
+}
+
+/* Base styling for both forms */
+.login-form, .recovery-form, .registration-form {
+    position: absolute;
+    top: 50%; /* Center vertically */
+    left: 50%; /* Start at the center */
+    transform: translate(-50%, -50%); /* Adjust for exact centering */
+    width: 80%; /* Adjust width as needed */
+    max-width: 400px;
+    height: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+/* Hide the recovery form by default */
+.recovery-form, .registration-form {
+    transform: translate(150%, -50%); /* Offscreen to the right */
+    opacity: 0; /* Hidden by default */
+}
+
+/* When active, bring recovery form to the center */
+.recovery-active .recovery-form {
+    transform: translate(-50%, -50%);
+    opacity: 1; /* Make it visible */
+}
+
+/* When active, move login form offscreen */
+.recovery-active .login-form {
+    transform: translate(-150%, -50%); /* Offscreen to the left */
+    opacity: 0; /* Hide it */
+}
+
+/* When active, bring registration form to the center */
+.registration-active .registration-form {
+    transform: translate(-50%, -50%);
+    opacity: 1; /* Make it visible */
+}
+
+/* When active, move login form offscreen */
+.registration-active .login-form {
+    transform: translate(-150%, -50%); /* Offscreen to the left */
+    opacity: 0; /* Hide it */
+}
+
+.switch-to-login, .register-link, .switch-to-recovery {
+    font-size: 16px !important;
+    line-height: 0.6rem !important;
+}
+
+.back-to-login {
+    font-size: 16px !important;
+    line-height: 0.6rem !important;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
