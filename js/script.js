@@ -800,7 +800,7 @@ async function loadHoroscopesFromExcel() {
     const horoscopes = {};
 
     try {
-        const response = await fetch('/Database.xlsx'); // Update with the correct file URL
+        const response = await fetch('Database.xlsx'); // Update with the correct file URL
         const arrayBuffer = await response.arrayBuffer();
         const workbook = XLSX.read(arrayBuffer, { type: 'array' });
 
