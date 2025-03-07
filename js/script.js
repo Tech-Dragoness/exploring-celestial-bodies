@@ -197,23 +197,23 @@ menuItems.forEach((item, index) => {
     switch (index) {
         case 0:
             height = '30vh';
-            url = '../Images/Home.JPG';
+            url = 'Images/Home.JPG';
             break;
         case 1:
             height = '40vh';
-            url = '../Images/About.JPG';
+            url = 'Images/About.JPG';
             break;
         case 2:
             height = '50vh';
-            url = '../Images/Did_you_know.JPG';
+            url = 'Images/Did_you_know.JPG';
             break;
         case 3:
             height = '60vh';
-            url = '../Images/Calendar.JPG';
+            url = 'Images/Calendar.JPG';
             break;
         case 4:
             height = '70vh';
-            url = '../Images/Horoscope.JPG';
+            url = 'Images/Horoscope.JPG';
             break;
     }
     item.style.height = height;
