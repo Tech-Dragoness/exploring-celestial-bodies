@@ -127,6 +127,9 @@ function renderMainCards() {
     if (window.innerWidth <= 768) {
         document.getElementById("searchBarInput").placeholder = "Search..."; // Shorten placeholder text
     }
+    else {
+        document.getElementById("searchBarInput").placeholder = "Search for celestial bodies..."; // Shorten placeholder text
+    }
 
     }, 200); // Delay to match the timing of the image transition
 
@@ -166,6 +169,7 @@ function triggerZoomEffect(cardType) {
         document.getElementById("searchBarInput").placeholder = "Search..."; // Shorten placeholder text
     } else {
         searchBarContainer.style.width = "50%"; // Default width for desktop
+        document.getElementById("searchBarInput").placeholder = "Search for celestial bodies....";
     }
 
     }, 500); // Delay to match the timing of the image transition
