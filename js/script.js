@@ -122,6 +122,12 @@ function renderMainCards() {
     setTimeout(() => {
         searchBarContainer.style.top = '30%';
         document.querySelector(".home-icon-container").style.display = "none";
+
+        // Check if the device width is less than 768px (common breakpoint for mobile)
+    if (window.innerWidth <= 768) {
+        document.getElementById("searchBarInput").placeholder = "Search..."; // Shorten placeholder text
+    }
+
     }, 200); // Delay to match the timing of the image transition
 
 
@@ -153,6 +159,15 @@ function triggerZoomEffect(cardType) {
     setTimeout(() => {
         searchBarContainer.style.top = '5%'; // Move search bar to the top of the screen
         document.querySelector(".home-icon-container").style.display = "block";
+
+        // Check if the device width is less than 768px (common breakpoint for mobile)
+    if (window.innerWidth <= 768) {
+        searchBarContainer.style.width = "60%"; // Make it smaller
+        document.getElementById("searchBarInput").placeholder = "Search..."; // Shorten placeholder text
+    } else {
+        searchBarContainer.style.width = "50%"; // Default width for desktop
+    }
+
     }, 500); // Delay to match the timing of the image transition
 
     // Change the cards dynamically based on the clicked card
