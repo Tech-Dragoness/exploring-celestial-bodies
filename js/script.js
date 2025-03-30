@@ -11,6 +11,8 @@ let scrollTop, scrollLeft, userSignedIn = false, userData = null;
 
 let mainScreenActive = false, starsActive = false, planetsActive = false, asteroidsActive = false, galaxiesActive = false, bhActive = false, aboutActive = false, didYouKnowActive = false, calendarActive = false, horoscopeActive = false;
 
+let touchStartY = 0, touchEndY = 0;
+
 function lockScroll() {
     // Get the current scroll position
     scrollTop = window.scrollY || document.documentElement.scrollTop;
@@ -396,10 +398,14 @@ function didYouKnowView() {
 
     renderPage();
     clearItems();
+
     if (!window.location.hash.includes('#Home-Page/Did-You-Know')) {
         navigateTo('#Home-Page/Did-You-Know');
         didYouKnowActive = true;
     }
+
+    unlockScroll();
+    enableScrollEvents();
 
     // Create the invisible section
     const invisibleSection = document.createElement("div");
@@ -417,6 +423,9 @@ function didYouKnowView() {
 
     // Create inner section with a column layout for header and row for facts
     const innerSection = document.createElement("div");
+    innerSection.style.maxHeight = "80vh";  // Set a max height to trigger scrolling
+    innerSection.style.overflowY = "auto";  // Enable vertical scrolling
+    innerSection.style.overflowX = "hidden";  // Prevent horizontal scrolling
     innerSection.style.width = "80%";
     innerSection.style.padding = "20px";
     innerSection.style.border = "2px solid white";
@@ -435,12 +444,29 @@ function didYouKnowView() {
     header.style.color = "white";
     innerSection.appendChild(header);
 
+    if (window.innerWidth <= 768) {
+        const headerLine = document.createElement("hr");
+        headerLine.style.width = "100%";
+        headerLine.style.border = "1px solid white";
+        headerLine.style.margin = "10px 0";
+        innerSection.appendChild(headerLine);
+    }
+
+
     // Create a container for facts (arranged in a row)
     const factsContainer = document.createElement("div");
     factsContainer.style.display = "flex";
     factsContainer.style.flexDirection = "row";  // Arrange facts in a row
-    factsContainer.style.justifyContent = "space-around";  // Space out items evenly
+    factsContainer.style.overflow = "visible";  // Ensure child elements are fully visible
+    factsContainer.style.height = "auto";  // Allow it to expand naturally
+    factsContainer.style.maxWidth = "100%";  // Prevent horizontal overflow
+    factsContainer.style.justifyContent = "center";  // Center the row
     factsContainer.style.alignItems = "center";  // Center vertically
+    if (window.innerWidth > 768) {  // Desktop View
+        factsContainer.style.flexWrap = "nowrap";  // Allow facts to wrap into multiple lines
+    } else {  // Mobile View
+        factsContainer.style.flexWrap = "wrap";  // Allow facts to wrap into multiple lines
+    }
 
     // Add facts with text, number, and additional text
     const facts = [
@@ -453,7 +479,7 @@ function didYouKnowView() {
 
     const totalDuration = 5000; // Total duration in ms (5 seconds)
 
-    facts.forEach(fact => {
+    facts.forEach((fact, index) => {
         const factDiv = document.createElement("div");
         factDiv.style.marginRight = "20px";  // Space between facts
         factDiv.style.marginLeft = "20px";  // Space between facts
@@ -481,33 +507,61 @@ function didYouKnowView() {
 
         factsContainer.appendChild(factDiv);
 
-        // Calculate the total number of all facts to normalize the animation speed
-        const maxNumber = 30000; // The highest number among all facts
-        const factor = totalDuration / (maxNumber / 50); // 50 is the time step for each increment (to ensure smooth animation)
-
-        // Animate the number counting
-        let count = 0;
-        const targetNumber = fact.number;
-        const increment = targetNumber / (totalDuration / 50); // This ensures all animations finish in 5 seconds
-
-        function animateNumber() {
-            if (count < targetNumber) {
-                count += increment;
-                factNumber.textContent = Math.floor(count);
-                setTimeout(animateNumber, 50);
-            } else {
-                factNumber.textContent = targetNumber;
-            }
+        // Add a horizontal line after each fact (except the last one)
+        if (window.innerWidth <= 768 && index !== facts.length - 1) {
+            const factLine = document.createElement("hr");
+            factLine.style.width = "100%";
+            factLine.style.border = "0.5px solid white";
+            factLine.style.margin = "10px 0";
+            factsContainer.appendChild(factLine);
         }
 
-        animateNumber();
-    });
+    // Calculate the total number of all facts to normalize the animation speed
+    const maxNumber = 30000; // The highest number among all facts
+    const factor = totalDuration / (maxNumber / 50); // 50 is the time step for each increment (to ensure smooth animation)
 
-    // Append facts container and inner section to invisible section
-    innerSection.appendChild(factsContainer);
-    invisibleSection.appendChild(innerSection);
-    document.body.appendChild(invisibleSection);
+    // Animate the number counting
+    let count = 0;
+    const targetNumber = fact.number;
+    const increment = targetNumber / (totalDuration / 50); // This ensures all animations finish in 5 seconds
+
+    function animateNumber() {
+        if (count < targetNumber) {
+            count += increment;
+            factNumber.textContent = Math.floor(count);
+            setTimeout(animateNumber, 50);
+        } else {
+            factNumber.textContent = targetNumber;
+        }
+    }
+
+    animateNumber();
+});
+
+// Append facts container and inner section to invisible section
+innerSection.appendChild(factsContainer);
+invisibleSection.appendChild(innerSection);
+document.body.appendChild(invisibleSection);
 }
+
+let resizeTimeout;
+
+window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout); // Clear any previous timeout to prevent spam
+
+    resizeTimeout = setTimeout(() => {
+        if (didYouKnowActive && (window.innerWidth !== prevWidth || window.innerHeight !== prevHeight)) {
+            prevWidth = window.innerWidth;
+            prevHeight = window.innerHeight;
+            
+            didYouKnowView(); // Re-render the page
+        }
+    }, 100); // Wait 100ms before triggering re-render (prevents excessive calls)
+});
+
+// Store initial dimensions
+let prevWidth = window.innerWidth;
+let prevHeight = window.innerHeight;
 
 // Function to remove the section
 function removeDidYouKnow() {
@@ -709,6 +763,9 @@ async function horoscopeView() {
         renderPage();
         clearItems();
 
+        unlockScroll();
+        enableScrollEvents();
+
         // Get the user's date of birth from the userData object
         const dob = userData.DateOfBirth; // Assuming userData has a DateOfBirth field
         const starSign = getStarSign(dob); // Get the star sign
@@ -730,16 +787,20 @@ async function horoscopeView() {
         invisibleSection.style.alignItems = "center";
         invisibleSection.style.zIndex = "1000";
 
-        // Centered rectangle
+        // Centered rectangle (Horoscope Box)
         const horoscopeContainer = document.createElement("div");
         horoscopeContainer.id = "horoscope-box";
         horoscopeContainer.style.width = "80%";
         horoscopeContainer.style.maxWidth = "90%";
+        horoscopeContainer.style.height = "80vh"; // Fix height so content can scroll
+        horoscopeContainer.style.maxHeight = "80vh"; // Ensures it doesn't go beyond screen
         horoscopeContainer.style.padding = "20px";
         horoscopeContainer.style.border = "2px solid white";
         horoscopeContainer.style.borderRadius = "10px";
-        horoscopeContainer.style.backgroundColor = "transparent";
+        horoscopeContainer.style.backgroundColor = "rgba(0, 0, 0, 0.5)"; // Slightly visible background
         horoscopeContainer.style.textAlign = "center";
+        horoscopeContainer.style.overflowY = "auto"; // Enable scrolling inside
+        horoscopeContainer.style.overflowX = "hidden"; // Prevent horizontal scrolling
 
         // Header with star sign
         const header = document.createElement("h1");
@@ -760,6 +821,7 @@ async function horoscopeView() {
         horoscopeContainer.appendChild(paragraph);
         invisibleSection.appendChild(horoscopeContainer);
         document.body.appendChild(invisibleSection);
+
     }
 }
 
@@ -882,45 +944,48 @@ function updateCards(cardType) {
         galaxiesActive = false;
         bhActive = false;
 
+        // Detect touch start position
+        window.addEventListener('touchstart', (event) => {
+            touchStartY = event.touches[0].clientY; // Get initial Y position
+        }, false);
+
+        // Detect touch end position and determine scroll direction
+        window.addEventListener('touchend', (event) => {
+            touchEndY = event.changedTouches[0].clientY; // Get final Y position
+            handleSwipe(); // Call function to check swipe direction
+        }, false);
+
+        // Wheel Scroll (Desktop)
         window.addEventListener('wheel', (event) => {
-            // Check if cardContainer has the 'stars-sub-cards' class
-            if (cardContainer.classList.contains('stars-sub-cards')) {
-                // Scroll down (next set)
-                if (event.deltaY > 0) {
-                    if (currentSet === cardSets.length) {
-                        // Ignore down scroll if already at the third set
-                        return;
-                    }
-                    cardContainer.innerHTML = ''; // Clear the existing cards
-                    renderCards(cardType, currentSet)
-                    currentSet += 1; // Update to show the next set
-                }
-                // Scroll up (previous set)
-                else if (event.deltaY < 0) {
-                    if (currentSet === 1) {
-                        // Ignore up scroll if already at the first set
-                        return;
-                    }
-                    cardContainer.innerHTML = ''; // Clear the existing cards
-                    renderCards(cardType, currentSet - 2)
-                    currentSet -= 1; // Update to show the next set
-                }
+            if (!cardContainer.classList.contains('stars-sub-cards')) return;
+
+            if (event.deltaY > 0) {
+                if (currentSet === cardSets.length) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet);
+                currentSet += 1;
+            } else if (event.deltaY < 0) {
+                if (currentSet === 1) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet - 2);
+                currentSet -= 1;
             }
         });
 
-        // For ArrowDown key (scroll down)
+        // Keyboard Navigation (Arrow Keys)
         window.addEventListener('keydown', (event) => {
+            if (!cardContainer.classList.contains('stars-sub-cards')) return;
+
             if (event.key === "ArrowDown") {
-                // Scroll down (next set)
-                if (cardContainer.classList.contains('stars-sub-cards')) {
-                    if (currentSet === cardSets.length) {
-                        // Ignore down scroll if already at the third set
-                        return;
-                    }
-                    cardContainer.innerHTML = ''; // Clear the existing cards
-                    renderCards(cardType, currentSet)
-                    currentSet += 1; // Update to show the next set
-                }
+                if (currentSet === cardSets.length) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet);
+                currentSet += 1;
+            } else if (event.key === "ArrowUp") {
+                if (currentSet === 1) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet - 2);
+                currentSet -= 1;
             }
         });
 
@@ -954,45 +1019,48 @@ function updateCards(cardType) {
         galaxiesActive = false;
         bhActive = false;
 
+        // Detect touch start position
+        window.addEventListener('touchstart', (event) => {
+            touchStartY = event.touches[0].clientY; // Get initial Y position
+        }, false);
+
+        // Detect touch end position and determine scroll direction
+        window.addEventListener('touchend', (event) => {
+            touchEndY = event.changedTouches[0].clientY; // Get final Y position
+            handleSwipe(); // Call function to check swipe direction
+        }, false);
+
+        // Wheel Scroll (Desktop)
         window.addEventListener('wheel', (event) => {
-            // Check if cardContainer has the 'planets-sub-cards' class
-            if (cardContainer.classList.contains('planets-sub-cards')) {
-                // Scroll down (next set)
-                if (event.deltaY > 0) {
-                    if (currentSet === cardSets.length) {
-                        // Ignore down scroll if already at the third set
-                        return;
-                    }
-                    cardContainer.innerHTML = ''; // Clear the existing cards
-                    renderCards(cardType, currentSet)
-                    currentSet += 1; // Update to show the next set
-                }
-                // Scroll up (previous set)
-                else if (event.deltaY < 0) {
-                    if (currentSet === 1) {
-                        // Ignore up scroll if already at the first set
-                        return;
-                    }
-                    cardContainer.innerHTML = ''; // Clear the existing cards
-                    renderCards(cardType, currentSet - 2)
-                    currentSet -= 1; // Update to show the next set
-                }
+            if (!cardContainer.classList.contains('planets-sub-cards')) return;
+
+            if (event.deltaY > 0) {
+                if (currentSet === cardSets.length) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet);
+                currentSet += 1;
+            } else if (event.deltaY < 0) {
+                if (currentSet === 1) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet - 2);
+                currentSet -= 1;
             }
         });
 
-        // For ArrowDown key (scroll down)
+        // Keyboard Navigation (Arrow Keys)
         window.addEventListener('keydown', (event) => {
+            if (!cardContainer.classList.contains('planets-sub-cards')) return;
+
             if (event.key === "ArrowDown") {
-                // Scroll down (next set)
-                if (cardContainer.classList.contains('planets-sub-cards')) {
-                    if (currentSet === cardSets.length) {
-                        // Ignore down scroll if already at the third set
-                        return;
-                    }
-                    cardContainer.innerHTML = ''; // Clear the existing cards
-                    renderCards(cardType, currentSet)
-                    currentSet += 1; // Update to show the next set
-                }
+                if (currentSet === cardSets.length) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet);
+                currentSet += 1;
+            } else if (event.key === "ArrowUp") {
+                if (currentSet === 1) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet - 2);
+                currentSet -= 1;
             }
         });
 
@@ -1025,45 +1093,48 @@ function updateCards(cardType) {
         galaxiesActive = false;
         bhActive = false;
 
+        // Detect touch start position
+        window.addEventListener('touchstart', (event) => {
+            touchStartY = event.touches[0].clientY; // Get initial Y position
+        }, false);
+
+        // Detect touch end position and determine scroll direction
+        window.addEventListener('touchend', (event) => {
+            touchEndY = event.changedTouches[0].clientY; // Get final Y position
+            handleSwipe(); // Call function to check swipe direction
+        }, false);
+
+        // Wheel Scroll (Desktop)
         window.addEventListener('wheel', (event) => {
-            // Check if cardContainer has the 'asteroids-sub-cards' class
-            if (cardContainer.classList.contains('asteroids-sub-cards')) {
-                // Scroll down (next set)
-                if (event.deltaY > 0) {
-                    if (currentSet === cardSets.length) {
-                        // Ignore down scroll if already at the third set
-                        return;
-                    }
-                    cardContainer.innerHTML = ''; // Clear the existing cards
-                    renderCards(cardType, currentSet)
-                    currentSet += 1; // Update to show the next set
-                }
-                // Scroll up (previous set)
-                else if (event.deltaY < 0) {
-                    if (currentSet === 1) {
-                        // Ignore up scroll if already at the first set
-                        return;
-                    }
-                    cardContainer.innerHTML = ''; // Clear the existing cards
-                    renderCards(cardType, currentSet - 2)
-                    currentSet -= 1; // Update to show the next set
-                }
+            if (!cardContainer.classList.contains('asteroids-sub-cards')) return;
+
+            if (event.deltaY > 0) {
+                if (currentSet === cardSets.length) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet);
+                currentSet += 1;
+            } else if (event.deltaY < 0) {
+                if (currentSet === 1) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet - 2);
+                currentSet -= 1;
             }
         });
 
-        // For ArrowDown key (scroll down)
+        // Keyboard Navigation (Arrow Keys)
         window.addEventListener('keydown', (event) => {
+            if (!cardContainer.classList.contains('asteroids-sub-cards')) return;
+
             if (event.key === "ArrowDown") {
-                // Scroll down (next set)
-                if (cardContainer.classList.contains('asteroids-sub-cards')) {
-                    if (currentSet === cardSets.length) {
-                        // Ignore down scroll if already at the third set
-                        return;
-                    }
-                    cardContainer.innerHTML = ''; // Clear the existing cards
-                    renderCards(cardType, currentSet)
-                    currentSet += 1; // Update to show the next set
-                }
+                if (currentSet === cardSets.length) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet);
+                currentSet += 1;
+            } else if (event.key === "ArrowUp") {
+                if (currentSet === 1) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet - 2);
+                currentSet -= 1;
             }
         });
 
@@ -1095,45 +1166,48 @@ function updateCards(cardType) {
         asteroidsActive = false;
         bhActive = false;
 
+        // Detect touch start position
+        window.addEventListener('touchstart', (event) => {
+            touchStartY = event.touches[0].clientY; // Get initial Y position
+        }, false);
+
+        // Detect touch end position and determine scroll direction
+        window.addEventListener('touchend', (event) => {
+            touchEndY = event.changedTouches[0].clientY; // Get final Y position
+            handleSwipe(); // Call function to check swipe direction
+        }, false);
+
+        // Wheel Scroll (Desktop)
         window.addEventListener('wheel', (event) => {
-            // Check if cardContainer has the 'galaxies-sub-cards' class
-            if (cardContainer.classList.contains('galaxies-sub-cards')) {
-                // Scroll down (next set)
-                if (event.deltaY > 0) {
-                    if (currentSet === cardSets.length) {
-                        // Ignore down scroll if already at the third set
-                        return;
-                    }
-                    cardContainer.innerHTML = ''; // Clear the existing cards
-                    renderCards(cardType, currentSet)
-                    currentSet += 1; // Update to show the next set
-                }
-                // Scroll up (previous set)
-                else if (event.deltaY < 0) {
-                    if (currentSet === 1) {
-                        // Ignore up scroll if already at the first set
-                        return;
-                    }
-                    cardContainer.innerHTML = ''; // Clear the existing cards
-                    renderCards(cardType, currentSet - 2)
-                    currentSet -= 1; // Update to show the next set
-                }
+            if (!cardContainer.classList.contains('galaxies-sub-cards')) return;
+
+            if (event.deltaY > 0) {
+                if (currentSet === cardSets.length) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet);
+                currentSet += 1;
+            } else if (event.deltaY < 0) {
+                if (currentSet === 1) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet - 2);
+                currentSet -= 1;
             }
         });
 
-        // For ArrowDown key (scroll down)
+        // Keyboard Navigation (Arrow Keys)
         window.addEventListener('keydown', (event) => {
+            if (!cardContainer.classList.contains('galaxies-sub-cards')) return;
+
             if (event.key === "ArrowDown") {
-                // Scroll down (next set)
-                if (cardContainer.classList.contains('galaxies-sub-cards')) {
-                    if (currentSet === cardSets.length) {
-                        // Ignore down scroll if already at the third set
-                        return;
-                    }
-                    cardContainer.innerHTML = ''; // Clear the existing cards
-                    renderCards(cardType, currentSet)
-                    currentSet += 1; // Update to show the next set
-                }
+                if (currentSet === cardSets.length) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet);
+                currentSet += 1;
+            } else if (event.key === "ArrowUp") {
+                if (currentSet === 1) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet - 2);
+                currentSet -= 1;
             }
         });
 
@@ -1166,63 +1240,81 @@ function updateCards(cardType) {
         asteroidsActive = false;
         galaxiesActive = false;
 
+        // Detect touch start position
+        window.addEventListener('touchstart', (event) => {
+            touchStartY = event.touches[0].clientY; // Get initial Y position
+        }, false);
+
+        // Detect touch end position and determine scroll direction
+        window.addEventListener('touchend', (event) => {
+            touchEndY = event.changedTouches[0].clientY; // Get final Y position
+            handleSwipe(); // Call function to check swipe direction
+        }, false);
+
+        // Wheel Scroll (Desktop)
         window.addEventListener('wheel', (event) => {
-            // Check if cardContainer has the 'black-holes-sub-cards' class
-            if (cardContainer.classList.contains('black-holes-sub-cards')) {
-                // Scroll down (next set)
-                if (event.deltaY > 0) {
-                    if (currentSet === cardSets.length) {
-                        // Ignore down scroll if already at the third set
-                        return;
-                    }
-                    cardContainer.innerHTML = ''; // Clear the existing cards
-                    renderCards(cardType, currentSet)
-                    currentSet += 1; // Update to show the next set
-                }
-                // Scroll up (previous set)
-                else if (event.deltaY < 0) {
-                    if (currentSet === 1) {
-                        // Ignore up scroll if already at the first set
-                        return;
-                    }
-                    cardContainer.innerHTML = ''; // Clear the existing cards
-                    renderCards(cardType, currentSet - 2)
-                    currentSet -= 1; // Update to show the next set
-                }
+            if (!cardContainer.classList.contains('black-holes-sub-cards')) return;
+
+            if (event.deltaY > 0) {
+                if (currentSet === cardSets.length) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet);
+                currentSet += 1;
+            } else if (event.deltaY < 0) {
+                if (currentSet === 1) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet - 2);
+                currentSet -= 1;
             }
         });
 
-        // For ArrowDown key (scroll down)
+        // Keyboard Navigation (Arrow Keys)
         window.addEventListener('keydown', (event) => {
+            if (!cardContainer.classList.contains('black-holes-sub-cards')) return;
+
             if (event.key === "ArrowDown") {
-                // Scroll down (next set)
-                if (cardContainer.classList.contains('black-holes-sub-cards')) {
-                    if (currentSet === cardSets.length) {
-                        // Ignore down scroll if already at the third set
-                        return;
-                    }
-                    cardContainer.innerHTML = ''; // Clear the existing cards
-                    renderCards(cardType, currentSet)
-                    currentSet += 1; // Update to show the next set
-                }
-            }
-        });
-
-        // For ArrowUp key (scroll up)
-        window.addEventListener('keydown', (event) => {
-            if (event.key === "ArrowUp") {
-                // Scroll up (previous set)
-                if (currentSet === 1) {
-                    // Ignore up scroll if already at the first set
-                    return;
-                }
-                cardContainer.innerHTML = ''; // Clear the existing cards
-                renderCards(cardType, currentSet - 2)
-                currentSet -= 1; // Update to show the next set
+                if (currentSet === cardSets.length) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet);
+                currentSet += 1;
+            } else if (event.key === "ArrowUp") {
+                if (currentSet === 1) return;
+                cardContainer.innerHTML = '';
+                renderCards(cardType, currentSet - 2);
+                currentSet -= 1;
             }
         });
 
     }
+
+    function handleSwipe() {
+        if (
+            !cardContainer.classList.contains('black-holes-sub-cards') &&
+            !cardContainer.classList.contains('galaxies-sub-cards') &&
+            !cardContainer.classList.contains('asteroids-sub-cards') &&
+            !cardContainer.classList.contains('planets-sub-cards') &&
+            !cardContainer.classList.contains('stars-sub-cards')
+        ) {
+            return; // Exit if none of these classes are present
+        }
+
+        const swipeDistance = touchStartY - touchEndY; // Calculate swipe direction
+
+        if (swipeDistance > 30) {
+            // Swipe Up (Next Set)
+            if (currentSet === cardSets.length) return; // Prevent going past last set
+            cardContainer.innerHTML = ''; // Clear cards
+            renderCards(cardType, currentSet);
+            currentSet += 1; // Move to next set
+        } else if (swipeDistance < -30) {
+            // Swipe Down (Previous Set)
+            if (currentSet === 1) return; // Prevent going before first set
+            cardContainer.innerHTML = ''; // Clear cards
+            renderCards(cardType, currentSet - 2);
+            currentSet -= 1; // Move to previous set
+        }
+    }
+
 
     renderCards(cardType, 0);
 
@@ -1810,7 +1902,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 300);
                 setTimeout(() => {
                     alert(`Welcome back, ${matchedUser.Name}!!!`);
-                },500);
+                }, 500);
             }
         } catch (error) {
             console.error("❌ OTP Verification Error:", error);
