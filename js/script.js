@@ -124,12 +124,13 @@ function renderMainCards() {
         document.querySelector(".home-icon-container").style.display = "none";
 
         // Check if the device width is less than 768px (common breakpoint for mobile)
-    if (window.innerWidth <= 768) {
-        document.getElementById("searchBarInput").placeholder = "Search..."; // Shorten placeholder text
-    }
-    else {
-        document.getElementById("searchBarInput").placeholder = "Search for celestial bodies..."; // Shorten placeholder text
-    }
+        if (window.innerWidth <= 768) {
+            searchBarContainer.style.width = "80%";
+            document.getElementById("searchBarInput").placeholder = "Search..."; // Shorten placeholder text
+        }
+        else {
+            document.getElementById("searchBarInput").placeholder = "Search for celestial bodies..."; // Shorten placeholder text
+        }
 
     }, 200); // Delay to match the timing of the image transition
 
@@ -164,13 +165,13 @@ function triggerZoomEffect(cardType) {
         document.querySelector(".home-icon-container").style.display = "block";
 
         // Check if the device width is less than 768px (common breakpoint for mobile)
-    if (window.innerWidth <= 768) {
-        searchBarContainer.style.width = "60%"; // Make it smaller
-        document.getElementById("searchBarInput").placeholder = "Search..."; // Shorten placeholder text
-    } else {
-        searchBarContainer.style.width = "50%"; // Default width for desktop
-        document.getElementById("searchBarInput").placeholder = "Search for celestial bodies....";
-    }
+        if (window.innerWidth <= 768) {
+            searchBarContainer.style.width = "60%"; // Make it smaller
+            document.getElementById("searchBarInput").placeholder = "Search..."; // Shorten placeholder text
+        } else {
+            searchBarContainer.style.width = "50%"; // Default width for desktop
+            document.getElementById("searchBarInput").placeholder = "Search for celestial bodies....";
+        }
 
     }, 500); // Delay to match the timing of the image transition
 
@@ -340,6 +341,7 @@ function aboutUsView() {
 
     renderPage();
     clearItems();
+
     if (!window.location.hash.includes('#Home-Page/About-Us')) {
         setTimeout(() => {
             navigateTo('#Home-Page/About-Us');
@@ -347,6 +349,8 @@ function aboutUsView() {
         aboutActive = true;
     }
 
+    unlockScroll();
+    enableScrollEvents();
 
     // New section creation
     const invisibleSection = document.createElement("div");
@@ -367,11 +371,15 @@ function aboutUsView() {
     aboutUsContainer.id = "about-us-box";
     aboutUsContainer.style.width = "80%";
     aboutUsContainer.style.maxWidth = "90%";
+    aboutUsContainer.style.height = "80vh"; // Fix height so content can scroll
+    aboutUsContainer.style.maxHeight = "80vh"; // Ensures it doesn't go beyond screen
     aboutUsContainer.style.padding = "20px";
     aboutUsContainer.style.border = "2px solid white";
     aboutUsContainer.style.borderRadius = "10px";
     aboutUsContainer.style.backgroundColor = "transparent";
     aboutUsContainer.style.textAlign = "center";
+    aboutUsContainer.style.overflowY = "auto"; // Enable scrolling inside
+    aboutUsContainer.style.overflowX = "hidden"; // Prevent horizontal scrolling
 
     // Header
     const header = document.createElement("h1");
@@ -535,32 +543,32 @@ function didYouKnowView() {
             factsContainer.appendChild(factLine);
         }
 
-    // Calculate the total number of all facts to normalize the animation speed
-    const maxNumber = 30000; // The highest number among all facts
-    const factor = totalDuration / (maxNumber / 50); // 50 is the time step for each increment (to ensure smooth animation)
+        // Calculate the total number of all facts to normalize the animation speed
+        const maxNumber = 30000; // The highest number among all facts
+        const factor = totalDuration / (maxNumber / 50); // 50 is the time step for each increment (to ensure smooth animation)
 
-    // Animate the number counting
-    let count = 0;
-    const targetNumber = fact.number;
-    const increment = targetNumber / (totalDuration / 50); // This ensures all animations finish in 5 seconds
+        // Animate the number counting
+        let count = 0;
+        const targetNumber = fact.number;
+        const increment = targetNumber / (totalDuration / 50); // This ensures all animations finish in 5 seconds
 
-    function animateNumber() {
-        if (count < targetNumber) {
-            count += increment;
-            factNumber.textContent = Math.floor(count);
-            setTimeout(animateNumber, 50);
-        } else {
-            factNumber.textContent = targetNumber;
+        function animateNumber() {
+            if (count < targetNumber) {
+                count += increment;
+                factNumber.textContent = Math.floor(count);
+                setTimeout(animateNumber, 50);
+            } else {
+                factNumber.textContent = targetNumber;
+            }
         }
-    }
 
-    animateNumber();
-});
+        animateNumber();
+    });
 
-// Append facts container and inner section to invisible section
-innerSection.appendChild(factsContainer);
-invisibleSection.appendChild(innerSection);
-document.body.appendChild(invisibleSection);
+    // Append facts container and inner section to invisible section
+    innerSection.appendChild(factsContainer);
+    invisibleSection.appendChild(innerSection);
+    document.body.appendChild(invisibleSection);
 }
 
 let resizeTimeout;
@@ -572,7 +580,7 @@ window.addEventListener("resize", () => {
         if (didYouKnowActive && (window.innerWidth !== prevWidth || window.innerHeight !== prevHeight)) {
             prevWidth = window.innerWidth;
             prevHeight = window.innerHeight;
-            
+
             didYouKnowView(); // Re-render the page
         }
     }, 100); // Wait 100ms before triggering re-render (prevents excessive calls)
