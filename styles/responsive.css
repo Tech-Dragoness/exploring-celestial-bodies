@@ -342,6 +342,10 @@
 {
 	.search-bar-container {
 		margin-top: 10px;
+		width: 60%;
+	}
+	.search-bar {
+		width: 80%;
 	}
 	.card {
 		width: 170px;
@@ -369,6 +373,7 @@
     }
 
     .image-section {
+		order: -1; /* Move image to the top */
         width: 100%;
         height: auto;
         text-align: center; /* Center the image */
@@ -383,6 +388,8 @@
 
     .text-section {
         width: 100%;
+		max-width: 90%; /* Prevents it from being too wide */
+		word-wrap: break-word; /* Ensures long words don’t break the layout */
         flex: 1;
         max-height: 50vh; /* Prevent text from overflowing screen */
         overflow-y: auto; /* Enable scrolling for overflow */
@@ -675,8 +682,8 @@
 		font-size: 18px !important;	
 	}
 	.calendar-container {
-		margin-top: 900px !important;
-		height: 50% !important;
+		margin-top: 800px !important;
+		height: 70% !important;
 		width: 75%;
 	}
 
