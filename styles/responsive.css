@@ -402,7 +402,14 @@
 	  }
 	  .calendar-container {
 		margin-top: 900px !important;
+		padding-right: -50px !important;
 		height: 50% !important;
+	}
+	.calendar-header h3 {
+		color: white;
+	}
+	.weekday {
+		color: white;
 	}
 	
 }
