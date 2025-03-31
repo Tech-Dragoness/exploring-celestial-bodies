@@ -401,9 +401,11 @@
 		font-size: 28px;
 	  }
 	  .calendar-container {
-		margin-top: 900px !important;
-		padding-right: -50px !important;
-		height: 50% !important;
+		width: 90%; /* Use more width on small screens */
+		height: 80%; /* Adjust height */
+		margin-top: 60vh !important;
+		margin-left: 0 !important;
+		margin-right: 50% !important;
 	}
 	.calendar-header h3 {
 		color: white;
@@ -448,12 +450,6 @@
 		overflow-wrap: break-word !important;
 		font-size: 28px;
 	  }
-	  .calendar-container {
-		margin-top: 900px !important;
-		height: 50% !important;
-		width: 80%;
-		margin-left: -60px !important;
-	}
 	.weekday {
 		font-size: 15px;
 	}
@@ -493,12 +489,6 @@
 	.card {
 		height: 100px;
 	}
-	.calendar-container {
-		margin-top: 900px !important;
-		height: 50% !important;
-		width: 70%;
-		margin-left: -50px !important;
-	}
 	.weekday {
 		font-size: 15px;
 	}
@@ -511,12 +501,6 @@
 
 @media only screen and (max-width: 539px)
 {
-	.calendar-container {
-		margin-top: 900px !important;
-		height: 50% !important;
-		width: 70%;
-		margin-left: -50px !important;
-	}
 	.weekday {
 		font-size: 15px;
 	}
@@ -534,12 +518,6 @@
 	}
 	#about-us-box p {
 		font-size: 0.8rem !important;
-	}
-	.calendar-container {
-		margin-top: 900px !important;
-		height: 50% !important;
-		width: 80%;
-		margin-left: -50px !important;
 	}
 	.weekday {
 		font-size: 15px !important;
@@ -627,12 +605,6 @@
 		width: 100%;
 		overflow-y: auto; /* Ensure scrolling inside */
 	}
-	.calendar-container {
-		margin-top: 900px !important;
-		height: 55% !important;
-		width: 65%;
-		margin-left: -20px;
-	}
 	.weekday {
 		font-size: 15px;
 	}
@@ -683,11 +655,6 @@
 
 	.text-section p {
 		font-size: 18px !important;	
-	}
-	.calendar-container {
-		margin-top: 800px !important;
-		height: 70% !important;
-		width: 75%;
 	}
 
 }

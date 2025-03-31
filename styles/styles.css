@@ -29,15 +29,25 @@ body, html {
     opacity: 0; /* Initially hidden */
 }
   
-  .hamburger {
+.hamburger {
+    display: block;
     position: fixed;
-    top: 20px;
-    left: 20px;
+    top: 0px;
+    left: 10px;
     font-size: 45px;
     cursor: pointer;
     color: white;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    padding: 10px 15px; /* Adds some spacing around the icon */
+    border-radius: 8px; /* Rounds the edges for a modern look */
     z-index: 1002;
-  }
+    transition: background-color 0.3s ease-in-out; /* Smooth transition effect */
+}
+
+/* Hover effect for better interaction */
+.hamburger:hover {
+    background-color: rgba(0, 0, 0, 0.7); /* Slightly darker on hover */
+}
   
   /* General Styling */
 .menu {
@@ -375,19 +385,19 @@ body, html {
   }
 
   .calendar-section {
-    display: block;
+    display: flex; /* Enables flexbox */
     justify-content: center !important;
     align-items: center !important;
     height: 100vh !important;
     width: 100vw !important;
     max-height: 1000px;
     position: relative;
-    margin-top: -500px;
+    margin-top: 0px;
 }
 
 /* Calendar Container */
 .calendar-container {
-    width: 40%;
+    width: 50%;
     height: 90% !important;
     background: url('../Images/Sparkly-Night.jpg') no-repeat center center;
     background-size: cover;
@@ -395,8 +405,8 @@ body, html {
     border-radius: 10px;
     text-align: center;
     padding: 20px;
-    margin-left: 20%;
-    margin-bottom: 0px;
+    margin-left: -15%;
+    max-width: 600px; /* Prevents it from being too wide */
 }
 
 /* Calendar Header */
@@ -467,7 +477,7 @@ body, html {
 /* Day Styles */
 #calendar-grid div {
 	font-size: 26px;
-    padding: 15px 0;
+    padding: 15px 5px;
     background: #fff; /* White background for better visibility */
     color: #130022; /* Dark text */
     border-radius: 5px;

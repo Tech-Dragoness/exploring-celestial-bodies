@@ -256,6 +256,8 @@ function showMenu() {
     menu.classList.remove('hidden');
     menu.style.pointerEvents = 'auto'; // Enable interaction
 
+    hamburgerButton.style.display = "none";
+
     const menuItems = document.querySelectorAll('.menu-item');
 
     // Animate menu items dropping down
@@ -281,6 +283,9 @@ menuItems.forEach(item => {
 
 // Function to hide menu
 function hideMenu() {
+
+    hamburgerButton.style.display = "block";
+
     // Animate menu items sliding up
     menuItems.forEach((item, index) => {
         setTimeout(() => {
@@ -297,6 +302,23 @@ function hideMenu() {
     }, menuItems.length * 100 + 200); // Ensure hide happens after animation completes
     isMenuOpen = false;
 }
+
+document.addEventListener("click", (event) => {
+    const menuItems = document.querySelectorAll(".menu-item"); // All clickable menu items
+    const hamburgerButton = document.querySelector(".hamburger");
+
+    // Ensure elements exist
+    if (!menuItems.length || !hamburgerButton) return;
+
+    // Check if the clicked element is NOT a menu item AND NOT the hamburger button
+    const clickedInsideMenuItem = Array.from(menuItems).some(item => item.contains(event.target));
+    const clickedHamburger = hamburgerButton.contains(event.target);
+
+    if (!clickedInsideMenuItem && !clickedHamburger) {
+        console.log("Clicked outside rectangles, closing menu...");
+        hideMenu(); // Close the menu
+    }
+});
 
 function clearItems() {
     const searchBarContainer = document.querySelector('.search-bar-container');

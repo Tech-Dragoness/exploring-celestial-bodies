@@ -27,6 +27,14 @@
     z-index: 999; /* Above all other elements */
     transition: background-color 0.3s, transform 0.2s; /* Add hover effects */
   }
+
+  #logout-popup {
+    margin-top: -10px;
+    margin-right: -15px !important;
+  }
+  #open-popup {
+    margin-right: -15px !important;
+  }
   
   #open-popup:hover, #logout-popup:hover {
     cursor: pointer;
