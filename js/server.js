@@ -55,7 +55,13 @@ app.post('/register', (req, res) => {
         console.log('Registration data received:', req.body);
         
         // Read the existing Excel file
-        const workbook = xlsx.readFile(excelFilePath);
+        try {
+            const workbook = xlsx.readFile(excelFilePath);
+        } catch (error) {
+        console.error("Excel file not found:", error);
+        return res.status(500).json({ message: "Excel file not found." });
+        }
+
         console.log('Excel file loaded successfully.');
 
         const sheetName = workbook.SheetNames[2]; // 3rd sheet (index 2)
