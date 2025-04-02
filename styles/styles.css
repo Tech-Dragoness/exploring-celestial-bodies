@@ -385,28 +385,34 @@ body, html {
   }
 
   .calendar-section {
-    display: flex; /* Enables flexbox */
-    justify-content: center !important;
-    align-items: center !important;
-    height: 100vh !important;
-    width: 100vw !important;
-    max-height: 1000px;
-    position: relative;
-    margin-top: 0px;
+    display: flex; /* Centering mechanism */
+    justify-content: center; /* Horizontal centering */
+    align-items: center; /* Vertical centering */
+    height: 100vh; /* Full screen height */
+    width: 100vw; /* Full screen width */
+    position: fixed; /* Stay in place on scroll */
+    top: 48%; /* Moves it down to the center */
+    left: 0;
+    padding: 20px; /* Ensures spacing from edges */
 }
 
-/* Calendar Container */
 .calendar-container {
-    width: 50%;
-    height: 90% !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items:center;
+    width: 50vw; /* Responsive width */
+    max-width: 600px; /* Prevents it from being too wide */
+    height: auto;
+    max-height: 90vh; /* Ensures it never goes outside the screen */
     background: url('../Images/Sparkly-Night.jpg') no-repeat center center;
     background-size: cover;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
     border-radius: 10px;
     text-align: center;
     padding: 20px;
-    margin-left: -15%;
-    max-width: 600px; /* Prevents it from being too wide */
+    margin-top: 0;
+    overflow: hidden; /* Prevents content from overflowing */
 }
 
 /* Calendar Header */
@@ -414,7 +420,7 @@ body, html {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .calendar-header button {
@@ -431,6 +437,7 @@ body, html {
 	font-size: 28px;
     margin: 0;
     color: #130022;
+    padding: 0 20px;
 }
 
 /* Weekday Labels */
@@ -455,7 +462,8 @@ body, html {
 	font-size: 22px;
     display: grid;
     grid-template-columns: repeat(7, 1fr); /* 7 columns for the 7 days */
-    gap: 5px; /* Optional spacing between labels */
+    gap: 40px; /* Optional spacing between labels */
+    padding: 10px;
     
 }
 
@@ -470,7 +478,8 @@ body, html {
 #calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
+    gap: 5px; /* Adds proper spacing */
+    width: 90%;
     position: relative; /* Ensure positioning works for tooltips */
 }
 

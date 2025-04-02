@@ -400,18 +400,29 @@
 		overflow-wrap: break-word !important;
 		font-size: 28px;
 	  }
-	  .calendar-container {
-		width: 90%; /* Use more width on small screens */
-		height: 80%; /* Adjust height */
-		margin-top: 60vh !important;
-		margin-left: 0 !important;
-		margin-right: 50% !important;
-	}
+	  
 	.calendar-header h3 {
 		color: white;
 	}
+	.calendar-container {
+        width: 100vw; /* Makes it occupy most of the screen */
+        max-width: 100%; /* Ensures it never exceeds screen width */
+		height: fit-content !important;
+        padding: 50px; /* Adjust padding for better fit */
+		margin-top: 100% !important;
+    }
+
+    .calendar-section {
+		min-height: 100vh; /* Prevents bottom shifting */
+        padding-top: 3vh; /* Slightly less padding */
+    }
 	.weekday {
 		color: white;
+		padding: 0; /* Fixes overflow issue */
+		white-space: nowrap; /* Prevents wrapping */
+	}
+	.calendar-days {
+		gap: 10px; /* Optional spacing between labels */
 	}
 	
 }
