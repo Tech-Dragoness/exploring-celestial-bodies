@@ -1,112 +1,85 @@
 import express, { json } from "express";
 import cors from "cors";
-import xlsx from 'xlsx';
+import { google } from "googleapis";
+import bcrypt from "bcrypt";
+import dotenv from "dotenv";
+
+dotenv.config(); // Load environment variables
 
 const app = express();
-const port = 3000; // Define the port variable
+const port = 3000;
+const sheets = google.sheets({ version: "v4", auth: process.env.GOOGLE_API_KEY });
+const spreadsheetId = process.env.SPREADSHEET_ID; // Store in .env
 
-// Enable CORS
+// Enable CORS and JSON parsing
 app.use(cors());
-
-// Parse JSON request bodies
 app.use(json());
-app.use(express.json()); // Middleware to parse JSON
 
-// Path to your Excel file
-const excelFilePath = 'https://docs.google.com/spreadsheets/d/1kzqK1_1GmIf-u76vozW3FA5ZV50IOcaI/edit?usp=sharing&ouid=100281797499945970122&rtpof=true&sd=true'; // Update if needed
+// Helper function to fetch Google Sheets data
+async function getSheetData(sheetName) {
+    const response = await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: sheetName,
+    });
+    const rows = response.data.values;
+    const headers = rows[0];
+    return rows.slice(1).map(row => Object.fromEntries(headers.map((key, i) => [key, row[i]])));
+}
 
-let Check=false;
-
-// Endpoint to check if the email already exists
-app.post('/check-email', (req, res) => {
-    const { email } = req.body;
-    
+// Check if email exists
+app.post('/check-email', async (req, res) => {
     try {
-        const workbook = xlsx.readFile(excelFilePath);
-        const sheet = workbook.Sheets[workbook.SheetNames[2]]; // Assuming the data is in the 3rd sheet
-        const sheetData = xlsx.utils.sheet_to_json(sheet, { defval: "" });
-
-        // Check if email exists
-        const emailExists = sheetData.some(row => row.Email === email);
+        const { email } = req.body;
+        const data = await getSheetData("Users"); // Adjust sheet name
+        const emailExists = data.some(row => row.Email === email);
         res.json({ exists: emailExists });
     } catch (error) {
-        console.error("Error while checking email:", error);
-        res.status(500).json({ message: "An error occurred while checking email." });
+        console.error("Error checking email:", error);
+        res.status(500).json({ message: "Server error." });
     }
 });
 
-// Endpoint to check if the phone number already exists
-app.post('/check-phone', (req, res) => {
-    const { phone } = req.body;
-    const workbook = xlsx.readFile('../Database.xlsx');
-    const sheet = workbook.Sheets[workbook.SheetNames[2]]; // Assuming data is in the 3rd sheet
-    const sheetData = xlsx.utils.sheet_to_json(sheet, { defval: "" });
-
-    // Check if the phone number exists
-    const phoneExists = sheetData.some(row => row.PhoneNumber === phone);
-    res.json({ exists: phoneExists });
+// Check if phone exists
+app.post('/check-phone', async (req, res) => {
+    try {
+        const { phone } = req.body;
+        const data = await getSheetData("Users");
+        const phoneExists = data.some(row => row.PhoneNumber === phone);
+        res.json({ exists: phoneExists });
+    } catch (error) {
+        console.error("Error checking phone:", error);
+        res.status(500).json({ message: "Server error." });
+    }
 });
 
-// Endpoint to handle registration
-app.post('/register', (req, res) => {
-    const { name, email, dob, phone, password } = req.body;
-    
+// Handle user registration
+app.post('/register', async (req, res) => {
     try {
-        console.log('Registration data received:', req.body);
-        
-        // Read the existing Excel file
-        try {
-            const workbook = xlsx.readFile(excelFilePath);
-        } catch (error) {
-        console.error("Excel file not found:", error);
-        return res.status(500).json({ message: "Excel file not found." });
+        const { name, email, dob, phone, password } = req.body;
+        const data = await getSheetData("Users");
+
+        if (data.some(row => row.Email === email || row.PhoneNumber === phone)) {
+            return res.status(400).json({ message: "Email or phone already exists." });
         }
 
-        console.log('Excel file loaded successfully.');
-
-        const sheetName = workbook.SheetNames[2]; // 3rd sheet (index 2)
-        const sheet = workbook.Sheets[sheetName];
-
-        // Convert sheet to JSON
-        const sheetData = xlsx.utils.sheet_to_json(sheet, { defval: "" });
-
-        console.log('Original sheet data:', sheetData);
-
-        // Get the current timestamp
+        const hashedPassword = await bcrypt.hash(password, 10);
         const timestamp = new Date().toLocaleString();
 
-        // Add new data
-        sheetData.push({
-            RegisteredDateTime: timestamp,
-            Name: name,
-            Email: email,
-            DateOfBirth: dob,
-            PhoneNumber: phone,
-            Password: password
+        await sheets.spreadsheets.values.append({
+            spreadsheetId,
+            range: "Users",
+            valueInputOption: "RAW",
+            requestBody: { values: [[timestamp, name, email, dob, phone, hashedPassword]] },
         });
 
-        console.log('Updated sheet data:', sheetData);
-
-        // Convert updated data back to the sheet
-        const updatedSheet = xlsx.utils.json_to_sheet(sheetData);
-
-        // Replace the old sheet with the updated sheet
-        workbook.Sheets[sheetName] = updatedSheet;
-
-        // Write the updated workbook back to the file
-        xlsx.writeFile(workbook, excelFilePath);
-        console.log('Excel file updated successfully.');
-        Check=true;
-
-        res.json({ message: `Welcome ${name}, let's start our incredible journey through the celestial!!!` });
+        res.json({ message: `Welcome ${name}, let's start our incredible journey through the celestial!` });
     } catch (error) {
-        console.error("Error during registration:", error);
-        Check=false;
-        res.status(500).json({ message: "An error occurred while registering. Please try again.", check: Check });
+        console.error("Error registering user:", error);
+        res.status(500).json({ message: "Registration failed." });
     }
 });
 
-// Start the server
+// Start server
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+    console.log(`Server running at http://localhost:${port}`);
 });
