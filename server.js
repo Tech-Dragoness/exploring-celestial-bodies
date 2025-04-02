@@ -8,6 +8,13 @@ dotenv.config(); // Load environment variables
 const app = express();
 const port = 3000;
 
+// Enable CORS for specific origin
+const corsOptions = {
+    origin: 'https://tech-dragoness.github.io',  // Allow your GitHub Pages domain
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type']
+  };
+
 if (!process.env.SPREADSHEET_ID || !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
     console.error("❌ Missing .env variables! Make sure SPREADSHEET_ID and GOOGLE_APPLICATION_CREDENTIALS are set.");
     process.exit(1); // Stop execution
@@ -21,9 +28,12 @@ const auth = new google.auth.GoogleAuth({
 const sheets = google.sheets({ version: "v4", auth });
 const spreadsheetId = process.env.SPREADSHEET_ID; // Store in .env
 
-// Enable CORS and JSON parsing
-app.use(cors());
+// Enable CORS with options
+app.use(cors(corsOptions));
+
+// Parse JSON request bodies
 app.use(json());
+app.use(express.json()); // Middleware to parse JSON
 
 // Helper function to fetch Google Sheets data
 async function getSheetData(sheetName) {
