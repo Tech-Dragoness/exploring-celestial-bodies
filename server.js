@@ -15,17 +15,21 @@ const corsOptions = {
     allowedHeaders: ['Content-Type']
   };
 
-if (!process.env.SPREADSHEET_ID || !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+if (!process.env.SPREADSHEET_ID || !process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
     console.error("❌ Missing .env variables! Make sure SPREADSHEET_ID and GOOGLE_APPLICATION_CREDENTIALS are set.");
     process.exit(1); // Stop execution
 }
 
+const credentials = JSON.parse(
+    Buffer.from(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON, 'base64').toString('utf8')
+);
+
 const auth = new google.auth.GoogleAuth({
-    keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS, // Path to service account JSON file
-    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+    credentials,
+    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
 
-const sheets = google.sheets({ version: "v4", auth });
+const sheets = google.sheets({ version: 'v4', auth });
 const spreadsheetId = process.env.SPREADSHEET_ID; // Store in .env
 
 // Enable CORS with options
