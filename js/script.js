@@ -315,7 +315,7 @@ document.addEventListener("click", (event) => {
     const clickedInsideMenuItem = Array.from(menuItems).some(item => item.contains(event.target));
     const clickedHamburger = hamburgerButton.contains(event.target);
 
-    if (!clickedInsideMenuItem && !clickedHamburger) {
+    if (!menu.classList.contains("hidden") && !clickedInsideMenuItem && !clickedHamburger) {
         console.log("Clicked outside rectangles, closing menu...");
         hideMenu(); // Close the menu
     }
