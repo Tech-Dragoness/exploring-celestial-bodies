@@ -1,7 +1,6 @@
 import express, { json } from "express";
 import cors from "cors";
 import { google } from "googleapis";
-import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 
 dotenv.config(); // Load environment variables
@@ -62,14 +61,13 @@ app.post('/register', async (req, res) => {
             return res.status(400).json({ message: "Email or phone already exists." });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
         const timestamp = new Date().toLocaleString();
 
         await sheets.spreadsheets.values.append({
             spreadsheetId,
             range: "Users",
             valueInputOption: "RAW",
-            requestBody: { values: [[timestamp, name, email, dob, phone, hashedPassword]] },
+            requestBody: { values: [[timestamp, name, email, dob, phone, password]] },
         });
 
         res.json({ message: `Welcome ${name}, let's start our incredible journey through the celestial!` });
