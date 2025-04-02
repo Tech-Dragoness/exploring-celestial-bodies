@@ -1732,7 +1732,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 try {
                     // Send a request to check if the email is already registered
-                    const emailCheckResponse = await fetch("https://exploring-celestial-bodies.onrender.com/check-email", {
+                    const emailCheckResponse = await fetch("https://e9dadcb7-701a-4a96-a03b-bdb64be42fde-00-3j2ghu9erxqcz.picard.replit.dev/check-email", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
@@ -1748,7 +1748,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                     // Send a request to check if the phone number is already registered
-                    const phoneCheckResponse = await fetch("https://exploring-celestial-bodies.onrender.com/check-phone", {
+                    const phoneCheckResponse = await fetch("https://e9dadcb7-701a-4a96-a03b-bdb64be42fde-00-3j2ghu9erxqcz.picard.replit.dev/check-phone", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
@@ -1764,7 +1764,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                     // Otherwise, proceed with registration
-                    const response = await fetch("https://exploring-celestial-bodies.onrender.com/register", {
+                    const response = await fetch("https://e9dadcb7-701a-4a96-a03b-bdb64be42fde-00-3j2ghu9erxqcz.picard.replit.dev/register", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
