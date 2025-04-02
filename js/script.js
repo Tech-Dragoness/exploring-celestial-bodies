@@ -316,7 +316,6 @@ document.addEventListener("click", (event) => {
     const clickedHamburger = hamburgerButton.contains(event.target);
 
     if (!menu.classList.contains("hidden") && !clickedInsideMenuItem && !clickedHamburger) {
-        console.log("Clicked outside rectangles, closing menu...");
         hideMenu(); // Close the menu
     }
 });
