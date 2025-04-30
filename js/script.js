@@ -1829,6 +1829,27 @@ document.addEventListener('DOMContentLoaded', () => {
         return found;
     }
 
+    // 🔹 Handle Recovery Form Submission
+    function handleRecoveryFormSubmission() {
+        const recoveryForm = document.querySelector('#recovery-form'); // Changed from .recovery-form to #recovery-form
+        if (!recoveryForm) {
+            console.error("Recovery form not found!");
+            return;
+        }
+        recoveryForm.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent page reload
+            console.log("Recovery form submitted, active element:", document.activeElement);
+
+            // Check which input is focused
+            const activeElement = document.activeElement;
+            if (activeElement === phoneNumberInput) {
+                await sendOTP(); // Call sendOTP if Enter is pressed in phone-number input
+            } else if (activeElement === otpInput && verifySection.style.display === "block") {
+                await verifyOTP(); // Call verifyOTP if Enter is pressed in otp input and verify-section is visible
+            }
+        });
+    }
+
     // 🔹 Send OTP Function (With Database Check)
     async function sendOTP() {
         let phoneNumber = phoneNumberInput.value.trim();
@@ -1919,6 +1940,7 @@ document.addEventListener('DOMContentLoaded', () => {
     handleFormSwitching();
     handleValidation();
     handleRegistrationValidation();
+    handleRecoveryFormSubmission();
 });
 
 window.displayZoomedCard = function (searchValue) {
