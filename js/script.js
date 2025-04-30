@@ -648,7 +648,7 @@ async function horoscopeView() {
         const dob = userData.DateOfBirth;
         const starSign = getStarSign(dob);
         const horoscope = await getHoroscope(starSign);
-        const invisibleSection = document.createElement jeu("div");
+        const invisibleSection = document.createElement("div");
         invisibleSection.id = "horoscope-section";
         invisibleSection.style.position = "fixed";
         invisibleSection.style.top = 0;
