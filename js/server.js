@@ -3,32 +3,31 @@ import cors from 'cors';
 import { google } from 'googleapis';
 
 const app = express();
-const port = process.env.PORT || 3000; // Use Render's PORT or default to 3000
+const port = process.env.PORT || 3000;
 
 // Enable CORS and JSON parsing
-app.use(cors());
+app.use(cors()); // Restrict to frontend URL in production
 app.use(json());
 app.use(express.json());
 
 // Google Sheets API setup
 const auth = new google.auth.GoogleAuth({
-    credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS), // Read from environment variable
+    credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS),
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
 
 const sheets = google.sheets({ version: 'v4', auth });
-const spreadsheetId = '1kzqK1_1GmIf-u76vozW3FA5ZV50IOcaI'; // Replace with your Google Sheet ID
-const sheetName = 'Users'; // Replace with your sheet's tab name if different (e.g., 'Users')
+const spreadsheetId = '1kzqK1_1GmIf-u76vozW3FA5ZV50IOcaI';
+const sheetName = 'Users';
 
 // Endpoint to check if the email already exists
 app.post('/check-email', async (req, res) => {
     const { email } = req.body;
 
     try {
-        // Fetch data from Google Sheet
         const response = await sheets.spreadsheets.values.get({
             spreadsheetId,
-            range: `${sheetName}!A:F`, // Adjust if columns differ
+            range: `${sheetName}!A:F`,
         });
 
         const rows = response.data.values || [];
@@ -36,7 +35,7 @@ app.post('/check-email', async (req, res) => {
             return res.json({ exists: false });
         }
 
-        const headers = rows[0]; // First row is headers
+        const headers = rows[0];
         const emailIndex = headers.indexOf('Email');
         if (emailIndex === -1) {
             throw new Error('Email column not found in sheet');
@@ -45,8 +44,12 @@ app.post('/check-email', async (req, res) => {
         const emailExists = rows.slice(1).some(row => row[emailIndex] === email);
         res.json({ exists: emailExists });
     } catch (error) {
-        console.error('Error checking email:', error);
-        res.status(500).json({ message: 'An error occurred while checking email.' });
+        console.error('Error checking email:', {
+            message: error.message,
+            code: error.code,
+            details: error.errors,
+        });
+        res.status(500).json({ message: 'An error occurred while checking email.', check: false });
     }
 });
 
@@ -55,7 +58,6 @@ app.post('/check-phone', async (req, res) => {
     const { phone } = req.body;
 
     try {
-        // Fetch data from Google Sheet
         const response = await sheets.spreadsheets.values.get({
             spreadsheetId,
             range: `${sheetName}!A:F`,
@@ -75,12 +77,15 @@ app.post('/check-phone', async (req, res) => {
         const phoneExists = rows.slice(1).some(row => row[phoneIndex] === phone);
         res.json({ exists: phoneExists });
     } catch (error) {
-        console.error('Error checking phone:', error);
-        res.status(500).json({ message: 'An error occurred while checking phone.' });
+        console.error('Error checking phone:', {
+            message: error.message,
+            code: error.code,
+            details: error.errors,
+        });
+        res.status(500).json({ message: 'An error occurred while checking phone.', check: false });
     }
 });
 
-// Endpoint to handle registration
 // Endpoint to handle registration
 app.post('/register', async (req, res) => {
     const { name, email, dob, phone, password } = req.body;
@@ -100,13 +105,17 @@ app.post('/register', async (req, res) => {
         console.log('Google Sheet updated successfully.');
         res.json({
             message: `Welcome ${name}, let's start our incredible journey through the celestial!!!`,
-            check: true // Added check flag
+            check: true
         });
     } catch (error) {
-        console.error('Error during registration:', error);
+        console.error('Error during registration:', {
+            message: error.message,
+            code: error.code,
+            details: error.errors,
+        });
         res.status(500).json({
             message: 'An error occurred while registering. Please try again.',
-            check: false // Added check flag
+            check: false
         });
     }
 });
