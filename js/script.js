@@ -1089,21 +1089,6 @@ function updateCards(cardType) {
                 currentSet -= 1;
             }
         });
-
-        // For ArrowUp key (scroll up)
-        window.addEventListener('keydown', (event) => {
-            if (event.key === "ArrowUp") {
-                // Scroll up (previous set)
-                if (currentSet === 1) {
-                    // Ignore up scroll if already at the first set
-                    return;
-                }
-                cardContainer.innerHTML = ''; // Clear the existing cards
-                renderCards(cardType, currentSet - 2)
-                currentSet -= 1; // Update to show the next set
-            }
-        });
-
     }
 
     else if (cardType === 'asteroids') {
@@ -1163,21 +1148,6 @@ function updateCards(cardType) {
                 currentSet -= 1;
             }
         });
-
-        // For ArrowUp key (scroll up)
-        window.addEventListener('keydown', (event) => {
-            if (event.key === "ArrowUp") {
-                // Scroll up (previous set)
-                if (currentSet === 1) {
-                    // Ignore up scroll if already at the first set
-                    return;
-                }
-                cardContainer.innerHTML = ''; // Clear the existing cards
-                renderCards(cardType, currentSet - 2)
-                currentSet -= 1; // Update to show the next set
-            }
-        });
-
     }
     else if (cardType === 'galaxies') {
         cardContainer.classList.add('galaxies-sub-cards');  // This line adds the class
@@ -1236,22 +1206,6 @@ function updateCards(cardType) {
                 currentSet -= 1;
             }
         });
-
-        // For ArrowUp key (scroll up)
-        window.addEventListener('keydown', (event) => {
-            if (event.key === "ArrowUp") {
-                // Scroll up (previous set)
-                if (currentSet === 1) {
-                    // Ignore up scroll if already at the first set
-                    return;
-                }
-                cardContainer.innerHTML = ''; // Clear the existing cards
-                renderCards(cardType, currentSet - 2)
-                currentSet -= 1; // Update to show the next set
-            }
-        });
-
-
     }
     else if (cardType === 'black_holes') {
         cardContainer.classList.add('black-holes-sub-cards');  // This line adds the class
