@@ -17,7 +17,7 @@ const auth = new google.auth.GoogleAuth({
 });
 
 const sheets = google.sheets({ version: 'v4', auth });
-const spreadsheetId = '1kzqK1_1GmIf-u76vozW3FA5ZV50IOcaI';
+const spreadsheetId = '1n6WlAd-kYA1u_UzIFq2eT0a6A7ZrRYL_iRSyk9q6f9s';
 const sheetName = 'Users';
 
 // Health check endpoint
