@@ -20,9 +20,32 @@ const sheets = google.sheets({ version: 'v4', auth });
 const spreadsheetId = '1kzqK1_1GmIf-u76vozW3FA5ZV50IOcaI';
 const sheetName = 'Users';
 
+// Health check endpoint
+app.get('/health', async (req, res) => {
+    try {
+        // Test API connectivity with a simple request
+        await sheets.spreadsheets.get({ spreadsheetId });
+        res.json({ status: 'ok', message: 'Google Sheets API is accessible' });
+    } catch (error) {
+        console.error('Health check failed:', {
+            message: error.message,
+            code: error.code,
+            details: error.errors,
+        });
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to access Google Sheets API',
+            error: error.message,
+        });
+    }
+});
+
 // Endpoint to check if the email already exists
 app.post('/check-email', async (req, res) => {
     const { email } = req.body;
+    if (!email) {
+        return res.status(400).json({ message: 'Email is required', check: false });
+    }
 
     try {
         const response = await sheets.spreadsheets.values.get({
@@ -49,13 +72,19 @@ app.post('/check-email', async (req, res) => {
             code: error.code,
             details: error.errors,
         });
-        res.status(500).json({ message: 'An error occurred while checking email.', check: false });
+        res.status(500).json({
+            message: `Failed to check email: ${error.message}`,
+            check: false,
+        });
     }
 });
 
 // Endpoint to check if the phone number already exists
 app.post('/check-phone', async (req, res) => {
     const { phone } = req.body;
+    if (!phone) {
+        return res.status(400).json({ message: 'Phone number is required', check: false });
+    }
 
     try {
         const response = await sheets.spreadsheets.values.get({
@@ -82,13 +111,19 @@ app.post('/check-phone', async (req, res) => {
             code: error.code,
             details: error.errors,
         });
-        res.status(500).json({ message: 'An error occurred while checking phone.', check: false });
+        res.status(500).json({
+            message: `Failed to check phone: ${error.message}`,
+            check: false,
+        });
     }
 });
 
 // Endpoint to handle registration
 app.post('/register', async (req, res) => {
     const { name, email, dob, phone, password } = req.body;
+    if (!name || !email || !dob || !phone || !password) {
+        return res.status(400).json({ message: 'All fields are required', check: false });
+    }
 
     try {
         console.log('Registration data received:', req.body);
@@ -105,7 +140,7 @@ app.post('/register', async (req, res) => {
         console.log('Google Sheet updated successfully.');
         res.json({
             message: `Welcome ${name}, let's start our incredible journey through the celestial!!!`,
-            check: true
+            check: true,
         });
     } catch (error) {
         console.error('Error during registration:', {
@@ -114,8 +149,8 @@ app.post('/register', async (req, res) => {
             details: error.errors,
         });
         res.status(500).json({
-            message: 'An error occurred while registering. Please try again.',
-            check: false
+            message: `Failed to register: ${error.message}`,
+            check: false,
         });
     }
 });
