@@ -739,7 +739,7 @@ function calendarView() {
     // Example of how to load the important dates from Excel
     async function loadImportantDates() {
         try {
-            const response = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQwvnfmZ7eBhRvg0FqN41Cs8MChu1n91tzIj3uJWlm5CeVLgmAgaEdxqt4TXu0CBw/pub?gid=304422980&single=true&output=csv"); // Replace with your Sheet2 CSV URL
+            const response = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQHjSa7l2OkUmXqkWuFazITTio0xKSlAJcKyaLYGV0IwKHZX8GWGCNWSoRyUAOhFoFEbhGnrfdfkIqd/pub?gid=711577055&single=true&output=csv"); // Replace with your Sheet2 CSV URL
             const csvText = await response.text();
             const result = Papa.parse(csvText, {
                 header: true,
@@ -910,7 +910,7 @@ function getStarSign(dob) {
 async function loadHoroscopesFromExcel() {
     const horoscopes = {};
     try {
-        const response = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQwvnfmZ7eBhRvg0FqN41Cs8MChu1n91tzIj3uJWlm5CeVLgmAgaEdxqt4TXu0CBw/pub?gid=167769837&single=true&output=csv"); // Replace with your Sheet4 CSV URL
+        const response = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQHjSa7l2OkUmXqkWuFazITTio0xKSlAJcKyaLYGV0IwKHZX8GWGCNWSoRyUAOhFoFEbhGnrfdfkIqd/pub?gid=578610205&single=true&output=csv"); // Replace with your Sheet4 CSV URL
         const csvText = await response.text();
         const result = Papa.parse(csvText, {
             header: true,
@@ -1316,7 +1316,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function loadExcelFile() {
         try {
             if (!cachedRows) { // If not already loaded
-                const response = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQwvnfmZ7eBhRvg0FqN41Cs8MChu1n91tzIj3uJWlm5CeVLgmAgaEdxqt4TXu0CBw/pub?gid=1044517428&single=true&output=csv"); // Replace with your Sheet1 CSV URL
+                const response = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQHjSa7l2OkUmXqkWuFazITTio0xKSlAJcKyaLYGV0IwKHZX8GWGCNWSoRyUAOhFoFEbhGnrfdfkIqd/pub?gid=0&single=true&output=csv"); // Replace with your Sheet1 CSV URL
                 const csvText = await response.text();
                 const result = Papa.parse(csvText, {
                     header: true,
@@ -1455,7 +1455,7 @@ let cachedCredentials = null;
 async function loadCredentialsFromExcel() {
     try {
         if (!cachedCredentials) { // Load if not already cached
-            const response = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQwvnfmZ7eBhRvg0FqN41Cs8MChu1n91tzIj3uJWlm5CeVLgmAgaEdxqt4TXu0CBw/pub?gid=830547563&single=true&output=csv"); // Replace with your Sheet3 CSV URL
+            const response = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQHjSa7l2OkUmXqkWuFazITTio0xKSlAJcKyaLYGV0IwKHZX8GWGCNWSoRyUAOhFoFEbhGnrfdfkIqd/pub?gid=566896420&single=true&output=csv"); // Replace with your Sheet3 CSV URL
             const csvText = await response.text();
             const result = Papa.parse(csvText, {
                 header: true,
