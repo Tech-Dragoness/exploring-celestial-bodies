@@ -23,9 +23,13 @@ const sheetName = 'Users';
 // Health check endpoint
 app.get('/health', async (req, res) => {
     try {
-        // Test API connectivity with a simple request
-        await sheets.spreadsheets.get({ spreadsheetId });
-        res.json({ status: 'ok', message: 'Google Sheets API is accessible' });
+        const response = await sheets.spreadsheets.get({ spreadsheetId });
+        const sheetTitles = response.data.sheets.map(sheet => sheet.properties.title);
+        res.json({
+            status: 'ok',
+            message: 'Google Sheets API is accessible',
+            tabs: sheetTitles,
+        });
     } catch (error) {
         console.error('Health check failed:', {
             message: error.message,
