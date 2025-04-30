@@ -793,6 +793,7 @@ async function horoscopeView() {
     removeAbout();
     removeDidYouKnow();
     removeCalendar();
+    removeHoroscope();
 
     if (!zoomedCard.classList.contains("hidden")) {
         closeZoomedCard();
@@ -1831,21 +1832,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 🔹 Handle Recovery Form Submission
     function handleRecoveryFormSubmission() {
-        const recoveryForm = document.querySelector('#recovery-form'); // Changed from .recovery-form to #recovery-form
+        const recoveryForm = document.querySelector('#recovery-form');
         if (!recoveryForm) {
             console.error("Recovery form not found!");
             return;
         }
         recoveryForm.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Prevent page reload
+            event.preventDefault();
             console.log("Recovery form submitted, active element:", document.activeElement);
-
-            // Check which input is focused
             const activeElement = document.activeElement;
             if (activeElement === phoneNumberInput) {
-                await sendOTP(); // Call sendOTP if Enter is pressed in phone-number input
-            } else if (activeElement === otpInput && verifySection.style.display === "block") {
-                await verifyOTP(); // Call verifyOTP if Enter is pressed in otp input and verify-section is visible
+                await sendOTP();
             }
         });
     }
@@ -1892,11 +1889,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 🔹 Verify OTP Function
-    async function verifyOTP() {
+    let isVerifying = false; // Debounce flag to prevent multiple executions
+    async function verifyOTP(event) {
+        if (isVerifying) {
+            console.log("verifyOTP skipped due to isVerifying");
+            return;
+        }
+        isVerifying = true;
+        console.log("verifyOTP called, event type:", event ? event.type : "direct call");
+
         const otp = otpInput.value.trim();
 
         if (!otp) {
             message.innerHTML = "❌ Enter OTP.";
+            isVerifying = false;
             return;
         }
 
@@ -1904,7 +1910,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await window.confirmationResult.confirm(otp);
             message.innerHTML = "✅ OTP Verified!";
 
-            // ✅ Find the user in cached credentials
+            // Find the user in cached credentials
             const matchedUser = cachedCredentials.find(
                 row => row.PhoneNumber === storedPhoneNumber
             );
@@ -1918,15 +1924,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     userSignedIn = true;
                     userData = matchedUser;
                     document.getElementById('popup').style.display = 'none';
-                    horoscopeView(); // ✅ Call the function directly
+                    horoscopeView();
                 }, 300);
                 setTimeout(() => {
                     alert(`Welcome back, ${matchedUser.Name}!!!`);
+                    isVerifying = false; // Reset after successful verification
                 }, 500);
+            } else {
+                isVerifying = false; // Reset if no user found
             }
         } catch (error) {
             console.error("❌ OTP Verification Error:", error);
             message.innerHTML = "❌ Invalid OTP.";
+            isVerifying = false; // Reset on error
         }
     }
 
