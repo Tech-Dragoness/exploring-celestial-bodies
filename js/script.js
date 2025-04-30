@@ -974,33 +974,22 @@ function updateCards(cardType) {
     enableScrollEvents();
 
     if (cardType === 'stars') {
-        cardContainer.classList.add('stars-sub-cards');  // This line adds the class
-        cardContainer.classList.remove('planets-sub-cards');  // This line adds the class
-        cardContainer.classList.remove('asteroids-sub-cards');  // This line adds the class
-        cardContainer.classList.remove('galaxies-sub-cards');  // This line adds the class
-        cardContainer.classList.remove('black-holes-sub-cards');  // This line adds the class
-
+        cardContainer.classList.add('stars-sub-cards');
+        cardContainer.classList.remove('planets-sub-cards', 'asteroids-sub-cards', 'galaxies-sub-cards', 'black-holes-sub-cards');
         starsActive = true;
         planetsActive = false;
         asteroidsActive = false;
         galaxiesActive = false;
         bhActive = false;
-
-        // Detect touch start position
         window.addEventListener('touchstart', (event) => {
-            touchStartY = event.touches[0].clientY; // Get initial Y position
+            touchStartY = event.touches[0].clientY;
         }, false);
-
-        // Detect touch end position and determine scroll direction
         window.addEventListener('touchend', (event) => {
-            touchEndY = event.changedTouches[0].clientY; // Get final Y position
-            handleSwipe(); // Call function to check swipe direction
+            touchEndY = event.changedTouches[0].clientY;
+            handleSwipe();
         }, false);
-
-        // Wheel Scroll (Desktop)
         window.addEventListener('wheel', (event) => {
             if (!cardContainer.classList.contains('stars-sub-cards')) return;
-
             if (event.deltaY > 0) {
                 if (currentSet === cardSets.length) return;
                 cardContainer.innerHTML = '';
@@ -1009,15 +998,12 @@ function updateCards(cardType) {
             } else if (event.deltaY < 0) {
                 if (currentSet === 1) return;
                 cardContainer.innerHTML = '';
-                renderCards(cardType, currentSet - 2);
+                renderCards(cardType, currentSet - 1);
                 currentSet -= 1;
             }
         });
-
-        // Keyboard Navigation (Arrow Keys)
         window.addEventListener('keydown', (event) => {
             if (!cardContainer.classList.contains('stars-sub-cards')) return;
-
             if (event.key === "ArrowDown") {
                 if (currentSet === cardSets.length) return;
                 cardContainer.innerHTML = '';
@@ -1026,26 +1012,10 @@ function updateCards(cardType) {
             } else if (event.key === "ArrowUp") {
                 if (currentSet === 1) return;
                 cardContainer.innerHTML = '';
-                renderCards(cardType, currentSet - 2);
+                renderCards(cardType, currentSet - 1);
                 currentSet -= 1;
             }
         });
-
-        // For ArrowUp key (scroll up)
-        window.addEventListener('keydown', (event) => {
-            if (event.key === "ArrowUp") {
-                // Scroll up (previous set)
-                if (currentSet === 1) {
-                    // Ignore up scroll if already at the first set
-                    return;
-                }
-                cardContainer.innerHTML = ''; // Clear the existing cards
-                renderCards(cardType, currentSet - 2)
-                currentSet -= 1; // Update to show the next set
-            }
-        });
-
-
     }
 
     else if (cardType === 'planets') {
@@ -1876,11 +1846,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // 🔹 Check if Phone Number Exists in Excel
     async function isPhoneNumberRegistered(phoneNumber) {
         await loadCredentialsFromExcel();
+        console.log("Input Phone:", phoneNumber);
+        console.log("Cached Credentials:", cachedCredentials);
         if (!cachedCredentials || cachedCredentials.length === 0) {
             console.error("❌ No credentials found in database.");
             return false;
         }
-        return cachedCredentials.some(row => row.PhoneNumber === phoneNumber);
+        const found = cachedCredentials.some(row => {
+            console.log("Comparing:", row.PhoneNumber, "with", phoneNumber);
+            return row.PhoneNumber === phoneNumber;
+        });
+        console.log("Phone Found:", found);
+        return found;
     }
 
     // 🔹 Send OTP Function (With Database Check)
