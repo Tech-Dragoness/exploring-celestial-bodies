@@ -974,22 +974,33 @@ function updateCards(cardType) {
     enableScrollEvents();
 
     if (cardType === 'stars') {
-        cardContainer.classList.add('stars-sub-cards');
-        cardContainer.classList.remove('planets-sub-cards', 'asteroids-sub-cards', 'galaxies-sub-cards', 'black-holes-sub-cards');
+        cardContainer.classList.add('stars-sub-cards');  // This line adds the class
+        cardContainer.classList.remove('planets-sub-cards');  // This line adds the class
+        cardContainer.classList.remove('asteroids-sub-cards');  // This line adds the class
+        cardContainer.classList.remove('galaxies-sub-cards');  // This line adds the class
+        cardContainer.classList.remove('black-holes-sub-cards');  // This line adds the class
+
         starsActive = true;
         planetsActive = false;
         asteroidsActive = false;
         galaxiesActive = false;
         bhActive = false;
+
+        // Detect touch start position
         window.addEventListener('touchstart', (event) => {
-            touchStartY = event.touches[0].clientY;
+            touchStartY = event.touches[0].clientY; // Get initial Y position
         }, false);
+
+        // Detect touch end position and determine scroll direction
         window.addEventListener('touchend', (event) => {
-            touchEndY = event.changedTouches[0].clientY;
-            handleSwipe();
+            touchEndY = event.changedTouches[0].clientY; // Get final Y position
+            handleSwipe(); // Call function to check swipe direction
         }, false);
+
+        // Wheel Scroll (Desktop)
         window.addEventListener('wheel', (event) => {
             if (!cardContainer.classList.contains('stars-sub-cards')) return;
+
             if (event.deltaY > 0) {
                 if (currentSet === cardSets.length) return;
                 cardContainer.innerHTML = '';
@@ -998,12 +1009,15 @@ function updateCards(cardType) {
             } else if (event.deltaY < 0) {
                 if (currentSet === 1) return;
                 cardContainer.innerHTML = '';
-                renderCards(cardType, currentSet - 1);
+                renderCards(cardType, currentSet - 2);
                 currentSet -= 1;
             }
         });
+
+        // Keyboard Navigation (Arrow Keys)
         window.addEventListener('keydown', (event) => {
             if (!cardContainer.classList.contains('stars-sub-cards')) return;
+
             if (event.key === "ArrowDown") {
                 if (currentSet === cardSets.length) return;
                 cardContainer.innerHTML = '';
@@ -1012,7 +1026,7 @@ function updateCards(cardType) {
             } else if (event.key === "ArrowUp") {
                 if (currentSet === 1) return;
                 cardContainer.innerHTML = '';
-                renderCards(cardType, currentSet - 1);
+                renderCards(cardType, currentSet - 2);
                 currentSet -= 1;
             }
         });
@@ -1491,7 +1505,7 @@ async function loadCredentialsFromExcel() {
             const result = Papa.parse(csvText, {
                 header: true,
                 skipEmptyLines: true,
-                dynamicTyping: true
+                dynamicTyping: false
             });
             cachedCredentials = result.data.map(row => ({
                 RegisteredDateTime: row.RegisteredDateTime || "",
@@ -1846,15 +1860,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // 🔹 Check if Phone Number Exists in Excel
     async function isPhoneNumberRegistered(phoneNumber) {
         await loadCredentialsFromExcel();
-        console.log("Input Phone:", phoneNumber);
+        console.log("Input Phone:", phoneNumber, "Type:", typeof phoneNumber);
         console.log("Cached Credentials:", cachedCredentials);
         if (!cachedCredentials || cachedCredentials.length === 0) {
             console.error("❌ No credentials found in database.");
             return false;
         }
         const found = cachedCredentials.some(row => {
-            console.log("Comparing:", row.PhoneNumber, "with", phoneNumber);
-            return row.PhoneNumber === phoneNumber;
+            const storedPhone = String(row.PhoneNumber).trim();
+            console.log("Comparing:", storedPhone, "with", phoneNumber, "Types:", typeof storedPhone, typeof phoneNumber);
+            return storedPhone === phoneNumber;
         });
         console.log("Phone Found:", found);
         return found;
