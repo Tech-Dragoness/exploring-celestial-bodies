@@ -1385,11 +1385,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     dynamicTyping: true
                 });
                 cachedRows = result.data.map(row => ({
-                    Name: row.Name || "",
-                    Description: row.Description || "",
-                    ImagePath: row.ImagePath || "",
+                    Name: row.Celestial-Body || "",
+                    Description: row.Text || "",
+                    ImagePath: row.Image || "",
                     Type: row.Type || "",
-                    Brief: row.Brief || ""
+                    Brief: row.Brief-Description || ""
                 }));
             }
         } catch (error) {
