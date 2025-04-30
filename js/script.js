@@ -747,8 +747,8 @@ function calendarView() {
                 dynamicTyping: true
             });
             result.data.forEach(row => {
-                const date = row.Date;
-                const description = row.Description;
+                const date = row.Dates;
+                const description = row.ImportanceOfDate;
                 const formattedDate = formatExcelDate(date); // Keep existing date formatting
                 if (formattedDate && description) {
                     cachedImportantDates[formattedDate] = description;
