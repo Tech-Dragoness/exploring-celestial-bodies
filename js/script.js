@@ -1596,165 +1596,165 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // Register form validation
-    async function handleRegistrationValidation() {
-        const registrationForm = document.getElementById('registration-form');
-        const nameInput = document.getElementById('name');
-        const emailInput = document.getElementById('reg-email');
-        const dobInput = document.getElementById('dob');
-        const phoneInput = document.getElementById('phone');
-        const passwordInput = document.getElementById('reg-password');
-        const confirmPasswordInput = document.getElementById('confirm-password');
-        const nameError = document.getElementById('name-error');
-        const emailError = document.getElementById('email-error1');
-        const dobError = document.getElementById('dob-error');
-        const phoneError = document.getElementById('phone-error1');
-        const passwordError = document.getElementById('password-error1');
-        const confirmPasswordError = document.getElementById('confirm-password-error');
+    // Register form validation
+async function handleRegistrationValidation() {
+    const registrationForm = document.getElementById('registration-form');
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('reg-email');
+    const dobInput = document.getElementById('dob');
+    const phoneInput = document.getElementById('phone');
+    const passwordInput = document.getElementById('reg-password');
+    const confirmPasswordInput = document.getElementById('confirm-password');
+    const nameError = document.getElementById('name-error');
+    const emailError = document.getElementById('email-error1');
+    const dobError = document.getElementById('dob-error');
+    const phoneError = document.getElementById('phone-error1');
+    const passwordError = document.getElementById('password-error1');
+    const confirmPasswordError = document.getElementById('confirm-password-error');
 
-        registrationForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            let valid = true;
+    registrationForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        let valid = true;
 
-            // Clear previous error messages
-            nameError.innerHTML = '';
-            emailError.innerHTML = '';
-            dobError.innerHTML = '';
-            phoneError.innerHTML = '';
-            passwordError.innerHTML = '';
-            confirmPasswordError.innerHTML = '';
+        // Clear previous error messages
+        nameError.innerHTML = '';
+        emailError.innerHTML = '';
+        dobError.innerHTML = '';
+        phoneError.innerHTML = '';
+        passwordError.innerHTML = '';
+        confirmPasswordError.innerHTML = '';
 
-            // Validate name
-            if (nameInput.value.trim() === '') {
-                nameError.innerHTML = '<span>Name is required.</span>';
-                valid = false;
-            }
+        // Validate name
+        if (nameInput.value.trim() === '') {
+            nameError.innerHTML = '<span>Name is required.</span>';
+            valid = false;
+        }
 
-            // Validate email
-            const emailValue = emailInput.value.trim();
-            if (!/^[\w.-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailValue)) {
-                emailError.innerHTML = '<span>Please enter a valid email id.</span>';
-                valid = false;
-            }
+        // Validate email
+        const emailValue = emailInput.value.trim();
+        if (!/^[\w.-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailValue)) {
+            emailError.innerHTML = '<span>Please enter a valid email id.</span>';
+            valid = false;
+        }
 
-            // Validate date of birth
-            const dobValue = dobInput.value.trim();
-            if (dobValue === '') {
-                dobError.innerHTML = '<span>Date of birth is required.</span>';
-                valid = false;
-            }
+        // Validate date of birth
+        const dobValue = dobInput.value.trim();
+        if (dobValue === '') {
+            dobError.innerHTML = '<span>Date of birth is required.</span>';
+            valid = false;
+        }
 
-            // Validate phone number
-            const phoneNumber = phoneInput.value.trim();
-            const regex = /^\d{10}$/; // Matches exactly 10 digits
-            if (!regex.test(phoneNumber)) {
-                phoneError.innerHTML = '<span>Please enter a valid phone number.</span>';
-                valid = false;
-            }
+        // Validate phone number
+        const phoneNumber = phoneInput.value.trim();
+        const regex = /^\d{10}$/;
+        if (!regex.test(phoneNumber)) {
+            phoneError.innerHTML = '<span>Please enter a valid phone number.</span>';
+            valid = false;
+        }
 
-            // Validate password
-            const passwordValue = passwordInput.value.trim();
-            const confirmPasswordValue = confirmPasswordInput.value.trim();
-            if (passwordValue.length <= 3) {
-                passwordError.innerHTML = '<span>Please enter a stronger password.</span>';
-                valid = false;
-            }
-            if (passwordValue !== confirmPasswordValue) {
-                confirmPasswordError.innerHTML = '<span>Passwords do not match.</span>';
-                valid = false;
-            }
+        // Validate password
+        const passwordValue = passwordInput.value.trim();
+        const confirmPasswordValue = confirmPasswordInput.value.trim();
+        if (passwordValue.length <= 3) {
+            passwordError.innerHTML = '<span>Please enter a stronger password.</span>';
+            valid = false;
+        }
+        if (passwordValue !== confirmPasswordValue) {
+            confirmPasswordError.innerHTML = '<span>Passwords do not match.</span>';
+            valid = false;
+        }
 
-            // If valid, check if email already exists
-            if (valid) {
-                const registrationData = {
-                    name: nameInput.value.trim(),
-                    email: emailInput.value.trim(),
-                    dob: dobInput.value.trim(),
-                    phone: phoneInput.value.trim(),
-                    password: passwordInput.value.trim()
+        // If valid, check if email already exists
+        if (valid) {
+            const registrationData = {
+                name: nameInput.value.trim(),
+                email: emailInput.value.trim(),
+                dob: dobInput.value.trim(),
+                phone: phoneInput.value.trim(),
+                password: passwordInput.value.trim()
+            };
+
+            try {
+                // Send a request to check if the email is already registered
+                const emailCheckResponse = await fetch('https://exploring-celestial-bodies.onrender.com/check-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: registrationData.email })
+                });
+                const emailCheckResult = await emailCheckResponse.json();
+
+                // If email exists, alert and stop registration
+                if (emailCheckResult.exists) {
+                    emailError.innerHTML = '<span>This email is already registered. Please use a different email.</span>';
+                    return;
+                }
+
+                // Send a request to check if the phone number is already registered
+                const phoneCheckResponse = await fetch('https://exploring-celestial-bodies.onrender.com/check-phone', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ phone: registrationData.phone })
+                });
+                const phoneCheckResult = await phoneCheckResponse.json();
+
+                // If phone number exists, alert and stop registration
+                if (phoneCheckResult.exists) {
+                    phoneError.innerHTML = '<span>This number is already registered. Please use a different number.</span>';
+                    return;
+                }
+
+                // Otherwise, proceed with registration
+                const response = await fetch('https://exploring-celestial-bodies.onrender.com/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(registrationData)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || result.check === false) {
+                    // Handle error case
+                    console.error('Registration error:', result.message);
+                    alert(result.message || 'An error occurred during registration.');
+                    return;
+                }
+
+                userSignedIn = true;
+                userData = {
+                    Name: nameInput.value.trim(),
+                    Email: emailInput.value.trim(),
+                    DateOfBirth: dobInput.value.trim(),
+                    PhoneNumber: phoneInput.value.trim(),
+                    Password: passwordInput.value.trim()
                 };
 
-                try {
-                    // Send a request to check if the email is already registered
-                    const emailCheckResponse = await fetch("https://exploring-celestial-bodies.onrender.com/check-email", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ email: registrationData.email })
-                    });
-                    const emailCheckResult = await emailCheckResponse.json();
+                // Clear form inputs
+                nameInput.value = '';
+                emailInput.value = '';
+                dobInput.value = '';
+                phoneInput.value = '';
+                passwordInput.value = '';
+                confirmPasswordInput.value = '';
 
-                    // If email exists, alert and stop registration
-                    if (emailCheckResult.exists) {
-                        emailError.innerHTML = '<span>This email is already registered. Please use a different email.</span>';
-                        return; // Stop further processing
-                    }
+                setTimeout(() => alert(result.message), 500);
 
-                    // Send a request to check if the phone number is already registered
-                    const phoneCheckResponse = await fetch("https://exploring-celestial-bodies.onrender.com/check-phone", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ phone: registrationData.phone })
-                    });
-                    const phoneCheckResult = await phoneCheckResponse.json();
-
-                    // If phone number exists, alert and stop registration
-                    if (phoneCheckResult.exists) {
-                        phoneError.innerHTML = '<span>This number is already registered. Please use a different number.</span>';
-                        return; // Stop further processing
-                    }
-
-                    // Otherwise, proceed with registration
-                    const response = await fetch("https://exploring-celestial-bodies.onrender.com/register", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(registrationData)
-                    });
-
-                    const result = await response.json();
-
-                    if (result.check === false) {
-                        // Handle the error case if 'check' is false
-                        console.error("An error occurred during registration.");
-                        return; // Stop further execution if there's an error
-                    }
-                    else {
-
-                        userSignedIn = true;
-                        userData = {
-                            Name: nameInput.value.trim(),
-                            Email: emailInput.value.trim(),
-                            DateOfBirth: dobInput.value.trim(),
-                            PhoneNumber: phoneInput.value.trim(),
-                            Password: passwordInput.value.trim()
-                        };
-
-                        // Clear form inputs
-                        nameInput.value = '';
-                        emailInput.value = '';
-                        dobInput.value = '';
-                        phoneInput.value = '';
-                        passwordInput.value = '';
-                        confirmPasswordInput.value = '';
-
-                        setTimeout(() => alert(result.message), 500);
-
-                        document.getElementById('popup').style.display = 'none';
-                        setTimeout(() => horoscopeView(), 300);
-                    }
-                } catch (error) {
-                    userData = null;
-                    userSignedIn = false;
-                    console.error("Error during registration:", error);
-                    alert("An error occurred. Please try again.");
-                }
+                document.getElementById('popup').style.display = 'none';
+                setTimeout(() => horoscopeView(), 300);
+            } catch (error) {
+                userData = null;
+                userSignedIn = false;
+                console.error('Error during registration:', error);
+                alert('An error occurred. Please try again.');
             }
-        });
-    }
+        }
+    });
+}
 
     // ✅ Firebase Configuration
     const firebaseConfig = {
