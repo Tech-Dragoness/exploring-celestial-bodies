@@ -739,23 +739,23 @@ function calendarView() {
     // Example of how to load the important dates from Excel
     async function loadImportantDates() {
         try {
-            const response = await fetch("Database.xlsx");  // Use the correct path to the file
-            const data = await response.arrayBuffer();
-            const workbook = XLSX.read(new Uint8Array(data), { type: "array" });
-            const sheetName = workbook.SheetNames[1];  // Assuming the important dates are in Sheet2
-            const sheet = workbook.Sheets[sheetName];
-
-            // Convert sheet to JSON and populate cachedImportantDates
-            const rows = XLSX.utils.sheet_to_json(sheet, { range: 1, header: 1 });  // Assuming first row has dates, second has descriptions
-            rows.forEach(row => {
-                const [date, description] = row;
-                const formattedDate = formatExcelDate(date);  // Convert to proper date format
-                if (formattedDate) {
-                    cachedImportantDates[formattedDate] = description;  // Store in the cachedImportantDates object
+            const response = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQwvnfmZ7eBhRvg0FqN41Cs8MChu1n91tzIj3uJWlm5CeVLgmAgaEdxqt4TXu0CBw/pub?gid=304422980&single=true&output=csv"); // Replace with your Sheet2 CSV URL
+            const csvText = await response.text();
+            const result = Papa.parse(csvText, {
+                header: true,
+                skipEmptyLines: true,
+                dynamicTyping: true
+            });
+            result.data.forEach(row => {
+                const date = row.Date;
+                const description = row.Description;
+                const formattedDate = formatExcelDate(date); // Keep existing date formatting
+                if (formattedDate && description) {
+                    cachedImportantDates[formattedDate] = description;
                 }
             });
         } catch (error) {
-            console.error("Error loading important dates from Excel:", error);
+            console.error("Error loading important dates from Google Sheets:", error);
         }
     }
 
@@ -908,30 +908,24 @@ function getStarSign(dob) {
 // Function to return a horoscope based on the star sign
 async function loadHoroscopesFromExcel() {
     const horoscopes = {};
-
     try {
-        const response = await fetch('Database.xlsx'); // Update with the correct file URL
-        const arrayBuffer = await response.arrayBuffer();
-        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-
-        // Get the 4th sheet
-        const sheetName = workbook.SheetNames[3];
-        const sheet = workbook.Sheets[sheetName];
-
-        // Convert the sheet data to JSON
-        const data = XLSX.utils.sheet_to_json(sheet);
-
-        // Map the data into the horoscopes object
-        data.forEach(row => {
-            const starSign = row['Star Sign']; // Replace with your actual column name
-            const prediction = row['Prediction']; // Replace with your actual column name
+        const response = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQwvnfmZ7eBhRvg0FqN41Cs8MChu1n91tzIj3uJWlm5CeVLgmAgaEdxqt4TXu0CBw/pub?gid=167769837&single=true&output=csv"); // Replace with your Sheet4 CSV URL
+        const csvText = await response.text();
+        const result = Papa.parse(csvText, {
+            header: true,
+            skipEmptyLines: true,
+            dynamicTyping: true
+        });
+        result.data.forEach(row => {
+            const starSign = row["Star Sign"]?.toString().trim();
+            const prediction = row["Prediction"];
             if (starSign && prediction) {
-                horoscopes[starSign.toString().trim()] = prediction;
+                horoscopes[starSign] = prediction;
             }
         });
         return horoscopes;
     } catch (error) {
-        console.error("Error loading horoscopes from Excel:", error);
+        console.error("Error loading horoscopes from Google Sheets:", error);
         return {};
     }
 }
@@ -1383,15 +1377,23 @@ document.addEventListener("DOMContentLoaded", () => {
     async function loadExcelFile() {
         try {
             if (!cachedRows) { // If not already loaded
-                const response = await fetch("Database.xlsx"); // Replace with correct path
-                const data = await response.arrayBuffer();
-                const workbook = XLSX.read(new Uint8Array(data), { type: "array" });
-                const sheetName = workbook.SheetNames[0]; // First sheet
-                const sheet = workbook.Sheets[sheetName];
-                cachedRows = XLSX.utils.sheet_to_json(sheet, { range: 1, header: ["Name", "Description", "ImagePath", "Type", "Brief"], defval: "" });
+                const response = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQwvnfmZ7eBhRvg0FqN41Cs8MChu1n91tzIj3uJWlm5CeVLgmAgaEdxqt4TXu0CBw/pub?gid=1044517428&single=true&output=csv"); // Replace with your Sheet1 CSV URL
+                const csvText = await response.text();
+                const result = Papa.parse(csvText, {
+                    header: true,
+                    skipEmptyLines: true,
+                    dynamicTyping: true
+                });
+                cachedRows = result.data.map(row => ({
+                    Name: row.Name || "",
+                    Description: row.Description || "",
+                    ImagePath: row.ImagePath || "",
+                    Type: row.Type || "",
+                    Brief: row.Brief || ""
+                }));
             }
         } catch (error) {
-            console.error("Error loading Excel file:", error);
+            console.error("Error loading celestial data from Google Sheets:", error);
         }
     }
 
@@ -1514,21 +1516,24 @@ let cachedCredentials = null;
 async function loadCredentialsFromExcel() {
     try {
         if (!cachedCredentials) { // Load if not already cached
-            const response = await fetch("Database.xlsx"); // Replace with correct path
-            const data = await response.arrayBuffer();
-            const workbook = XLSX.read(new Uint8Array(data), { type: "array" });
-            const sheetName = workbook.SheetNames[2]; // Third sheet (0-indexed)
-            const sheet = workbook.Sheets[sheetName];
-
-            // Specify the headers to map the data
-            cachedCredentials = XLSX.utils.sheet_to_json(sheet, {
-                range: 1,
-                header: ["RegisteredDateTime", "Name", "Email", "DateOfBirth", "PhoneNumber", "Password"],
-                defval: "" // Default value for empty cells
+            const response = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQwvnfmZ7eBhRvg0FqN41Cs8MChu1n91tzIj3uJWlm5CeVLgmAgaEdxqt4TXu0CBw/pub?gid=830547563&single=true&output=csv"); // Replace with your Sheet3 CSV URL
+            const csvText = await response.text();
+            const result = Papa.parse(csvText, {
+                header: true,
+                skipEmptyLines: true,
+                dynamicTyping: true
             });
+            cachedCredentials = result.data.map(row => ({
+                RegisteredDateTime: row.RegisteredDateTime || "",
+                Name: row.Name || "",
+                Email: row.Email || "",
+                DateOfBirth: row.DateOfBirth || "",
+                PhoneNumber: row.PhoneNumber || "",
+                Password: row.Password || ""
+            }));
         }
     } catch (error) {
-        console.error("Error loading Excel file:", error);
+        console.error("Error loading credentials from Google Sheets:", error);
     }
 }
 
